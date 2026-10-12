@@ -1,8 +1,8 @@
 
 {
-  "name": "neon-frontier-online",
-  "version": "2.0.0",
-  "description": "NEON FRONTIER online arena with private rooms",
+  "name": "neon-frontier-pro",
+  "version": "3.0.0",
+  "description": "Neon Frontier multiplayer arena with configurable private rooms",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
