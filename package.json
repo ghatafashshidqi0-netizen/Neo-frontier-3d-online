@@ -1,11 +1,11 @@
+
 {
-  "name": "neon-frontier-online-3d",
-  "version": "1.0.0",
-  "description": "A polished browser-based 3D multiplayer arena game built with Three.js, Express, and Socket.IO.",
+  "name": "neon-frontier-online",
+  "version": "2.0.0",
+  "description": "NEON FRONTIER online arena with private rooms",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js"
   },
   "engines": {
     "node": ">=18"
