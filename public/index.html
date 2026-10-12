@@ -4,196 +4,189 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>NEON FRONTIER PRO</title>
+<title>NEON FRONTIER PRO | Season 2</title>
 <style>
-:root{--cyan:#55e7ff;--panel:rgba(5,15,28,.95)}
+:root{--c:#55e7ff;--bg:#07101b;--panel:#0b1a2beF;--muted:#9cb8ca}
 *{box-sizing:border-box}
-body{margin:0;overflow:hidden;background:#07101c;color:#eefaff;font-family:Arial,sans-serif;touch-action:none}
-canvas{display:block;position:fixed;inset:0;z-index:0}
+body{margin:0;background:var(--bg);color:#effaff;font-family:Arial,sans-serif;overflow:hidden}
 button,input,select{font:inherit}
-button{cursor:pointer;color:#effcff;background:#102a40;border:1px solid #55e7ff70;border-radius:9px;padding:11px 13px;font-weight:700}
-button:disabled{opacity:.4;cursor:not-allowed}
+button{border:1px solid #55e7ff70;background:#102a40;color:white;border-radius:9px;padding:11px 13px;font-weight:bold;cursor:pointer}
 button:active{transform:scale(.98)}
-input,select{width:100%;padding:11px;background:#071522;color:white;border:1px solid #55e7ff55;border-radius:8px;outline:none}
-label{font-size:12px;color:#a6c8dc;display:block;margin:10px 0 5px}
-#roomMenu{position:fixed;z-index:10;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(ellipse at top,#15334c,#050a12 75%)}
-.panel{width:min(440px,100%);max-height:94vh;overflow:auto;padding:23px;background:var(--panel);border:1px solid #55e7ff55;border-radius:18px;box-shadow:0 0 50px #00cfff16}
-.logo{text-align:center;font-size:clamp(28px,7vw,42px);font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 22px #00d9ff55}
-.subtitle{text-align:center;font-size:11px;letter-spacing:3px;color:#8eafc4;margin:8px 0 20px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.primary{background:linear-gradient(120deg,#087eaa,#164e9c)}
-#menuError{color:#ff8da6;font-size:12px;min-height:18px;margin:10px 0;text-align:center}
-#connectionStatus{font-size:11px;text-align:center;color:#8eaabd;margin-top:8px}
-#hud{display:none;position:fixed;inset:0;z-index:2;pointer-events:none}
-.topbar{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.card{padding:9px 11px;background:#06111cdd;border:1px solid #55e7ff55;border-radius:10px;backdrop-filter:blur(8px);font-size:12px}
-#healthBar{height:6px;width:130px;background:#253748;margin-top:6px;border-radius:9px;overflow:hidden}
+button:disabled{opacity:.4;cursor:not-allowed}
+input,select{width:100%;background:#071522;color:white;border:1px solid #55e7ff55;border-radius:8px;padding:11px}
+label{display:block;font-size:12px;color:#a8c5d6;margin:11px 0 5px}
+#gameCanvas{position:fixed;inset:0;z-index:0}
+#app{position:fixed;inset:0;z-index:2;overflow:auto;background:radial-gradient(ellipse at 50% 0,#183952,#07101b 65%)}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 5%;border-bottom:1px solid #55e7ff28;background:#06111ccc}
+.brand{font-weight:1000;letter-spacing:2px;color:var(--c);font-size:clamp(17px,4vw,26px)}
+.credits{font-size:13px;color:#facc15;font-weight:bold}
+main{width:min(1100px,94%);margin:25px auto 50px}
+.hero{padding:clamp(20px,5vw,50px);border:1px solid #55e7ff40;border-radius:20px;background:linear-gradient(115deg,#0d2941ee,#10182de8);position:relative;overflow:hidden}
+.eyebrow{font-size:11px;letter-spacing:4px;color:var(--c)}
+h1{font-size:clamp(30px,7vw,62px);line-height:1.02;margin:12px 0}
+p{line-height:1.6;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
+.primary{background:linear-gradient(120deg,#087eaa,#284dc1);border-color:#55e7ff}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.tab.active{background:#087eaa;border-color:var(--c)}
+.view{display:none}
+.view.active{display:block}
+.panel{background:var(--panel);border:1px solid #55e7ff38;border-radius:15px;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.item{border:1px solid #55e7ff30;border-radius:12px;padding:16px;background:#091726}
+.item h3{margin:8px 0}
+.item p{font-size:12px}
+.swatch{width:100%;height:75px;border-radius:9px;margin-bottom:12px;background:linear-gradient(120deg,#55e7ff,#174d8b)}
+.small{font-size:11px;padding:8px 10px}
+.muted{color:var(--muted);font-size:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#roomMenu{display:none;max-width:460px;margin:0 auto}
+#gameHud{display:none;position:fixed;inset:0;z-index:3;pointer-events:none}
+.hudCard{background:#06111ce8;border:1px solid #55e7ff55;border-radius:10px;padding:9px 11px;font-size:12px;backdrop-filter:blur(8px)}
+#topHud{position:absolute;left:10px;right:10px;top:10px;display:flex;justify-content:space-between;gap:8px}
+#healthBar{width:120px;height:6px;background:#243748;border-radius:8px;overflow:hidden;margin-top:6px}
 #healthFill{height:100%;width:100%;background:#4ade80}
-#roomCode{font-size:17px;letter-spacing:2px;color:var(--cyan);font-weight:bold}
-#hudActions{position:absolute;left:10px;top:65px;display:flex;gap:6px;pointer-events:auto}
-.small{font-size:10px;padding:8px 9px}
-#playersBox{position:absolute;right:10px;top:112px;width:150px;max-height:27vh;overflow:auto}
-#playersList{font-size:11px;line-height:1.8;overflow-wrap:anywhere}
-#leaderboardBox{position:absolute;right:10px;top:calc(112px + min(27vh,180px) + 8px);width:150px;max-height:20vh;overflow:auto}
-#leaderboardList{font-size:10px;line-height:1.7}
-#matchStatus{position:absolute;left:50%;top:75px;transform:translateX(-50%);white-space:nowrap;color:var(--cyan);background:#06111cce;padding:8px 12px;border-radius:9px;font-size:11px}
-#notice{position:absolute;top:48%;left:50%;transform:translate(-50%,-50%);text-align:center;max-width:90%;font-size:14px;color:#d9f7ff;text-shadow:0 2px 10px black}
-#controls{position:absolute;inset:0}
-#joystick{position:absolute;left:20px;bottom:23px;width:124px;height:124px;border:2px solid #55e7ff70;background:#06111c88;border-radius:50%;pointer-events:auto;touch-action:none}
-#stick{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:#55e7ff99;border:2px solid #d6fbff;box-shadow:0 0 18px #00d9ff44}
-#fireButton{position:absolute;right:24px;bottom:32px;width:78px;height:78px;border-radius:50%;pointer-events:auto;background:#9c2148dd;border:2px solid #ff80a6;font-size:12px}
-#lookHint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:10px;color:#d5f5ff99;white-space:nowrap}
-#settingsOverlay{display:none;position:fixed;z-index:20;inset:0;align-items:center;justify-content:center;padding:12px;background:#020811bb;pointer-events:auto}
-#settingsPanel{width:min(390px,100%);max-height:92vh;overflow:auto;background:#081625f7;border:1px solid #55e7ff88;border-radius:15px;padding:19px;box-shadow:0 0 40px #00cfff20}
-#settingsPanel h2{margin:0;color:var(--cyan);font-size:20px}
-.settingsHint{font-size:11px;color:#91b5c9;line-height:1.5}
-#settingsMessage{font-size:12px;color:#ff8da6;min-height:17px;margin-top:8px}
-#resultsOverlay{display:none;position:fixed;inset:0;z-index:25;background:#020811dc;align-items:center;justify-content:center;padding:18px;pointer-events:auto}
-#resultsPanel{width:min(420px,100%);padding:22px;background:#091828;border:1px solid #55e7ff88;border-radius:16px}
-@media(min-width:800px){
- #joystick,#fireButton,#lookHint{display:none}
- #playersBox{top:90px}
- #leaderboardBox{top:calc(90px + min(27vh,180px) + 8px)}
-}
-@media(max-width:500px){
- .panel{padding:18px}
- #healthBar{width:90px}
- #playersBox,#leaderboardBox{width:115px}
- .card{padding:8px}
- #matchStatus{top:78px}
-}
+#hudButtons{position:absolute;top:100px;left:10px;display:flex;gap:6px;pointer-events:auto;flex-wrap:wrap}
+#rightHud{position:absolute;right:10px;top:100px;width:145px}
+#playersList,#leaderboard{font-size:11px;line-height:1.8;overflow-wrap:anywhere}
+#status{position:absolute;top:65px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#06111ce8;padding:8px 12px;border-radius:9px;color:var(--c);font-size:11px}
+#notice{position:absolute;top:47%;left:50%;transform:translate(-50%,-50%);text-align:center;max-width:90%;text-shadow:0 2px 10px black}
+#joystick{position:absolute;left:20px;bottom:22px;width:120px;height:120px;border-radius:50%;border:2px solid #55e7ff77;background:#06111c99;pointer-events:auto;touch-action:none}
+#stick{position:absolute;left:34px;top:34px;width:48px;height:48px;border-radius:50%;background:#55e7ff99;border:2px solid #d6fbff}
+#fire{position:absolute;right:24px;bottom:30px;width:78px;height:78px;border-radius:50%;background:#9c2148e8;border-color:#ff80a6;pointer-events:auto}
+#cameraSwitch{position:absolute;right:20px;bottom:125px;pointer-events:auto}
+#modal{display:none;position:fixed;inset:0;z-index:8;background:#020811d9;align-items:center;justify-content:center;padding:12px}
+#modalPanel{width:min(450px,100%);max-height:90vh;overflow:auto;padding:20px;background:#091827;border:1px solid #55e7ff77;border-radius:15px}
+#error{color:#ff8da6;min-height:18px;font-size:12px}
+@media(min-width:800px){#joystick,#fire,#cameraSwitch{display:none}main{margin-top:38px}}
+@media(max-width:520px){header{padding:13px 4%}.hero{padding:23px}#healthBar{width:85px}#rightHud{width:110px}}
 </style>
 </head>
 <body>
+<div id="app">
+<header>
+  <div class="brand">NEON FRONTIER <span style="font-size:10px">SEASON 02</span></div>
+  <div class="credits">◈ <span id="credits">500</span> CR</div>
+</header>
 
-<div id="roomMenu">
+<main>
+<section id="home" class="view active">
+  <div class="hero">
+    <div class="eyebrow">ONLINE COMBAT EXPERIENCE</div>
+    <h1>ENTER THE<br><span style="color:var(--c)">FRONTIER.</span></h1>
+    <p>Bangun loadout kamu, pilih operator favorit, dan tantang pemain lain di arena futuristik.</p>
+    <div class="actions">
+      <button class="primary" onclick="showView('play')">▶ PLAY ONLINE</button>
+      <button onclick="showView('loadout')">⚔ LOADOUT</button>
+      <button onclick="showView('shop')">◈ SKIN SHOP</button>
+    </div>
+    <div class="muted" style="margin-top:25px">PLAYER PROFILE · <span id="profileName">RANGER</span></div>
+    <h2>LEVEL <span id="level">1</span></h2>
+    <div class="muted">XP <span id="xp">0</span> · KILL <span id="totalKills">0</span> · MATCH <span id="totalMatches">0</span></div>
+  </div>
+
+  <div class="grid" style="margin-top:14px">
+    <div class="item"><div class="eyebrow">01 / COMBAT</div><h3>Online Arena</h3><p>Buat room privat atau masukkan kode room teman.</p><button class="primary" onclick="showView('play')">MASUK</button></div>
+    <div class="item"><div class="eyebrow">02 / ARMORY</div><h3>Loadout System</h3><p>Atur senjata dan operator sebelum bertanding.</p><button onclick="showView('loadout')">ATUR LOADOUT</button></div>
+    <div class="item"><div class="eyebrow">03 / COLLECTION</div><h3>Skin Collection</h3><p>Kumpulkan skin dengan kredit virtual dari permainan.</p><button onclick="showView('shop')">BUKA SHOP</button></div>
+  </div>
+</section>
+
+<section id="play" class="view">
   <div class="panel">
-    <div class="logo">NEON FRONTIER</div>
-    <div class="subtitle">PRO ONLINE ARENA</div>
-
-    <label>Nama pemain</label>
-    <input id="nameInput" maxlength="16" placeholder="Ranger01">
-
-    <label>Kode room teman</label>
-    <input id="codeInput" maxlength="6" placeholder="6 karakter" autocomplete="off" style="text-transform:uppercase">
-
-    <div class="grid2" style="margin-top:12px">
-      <button id="createButton" class="primary">CREATE ROOM</button>
-      <button id="joinButton">JOIN ROOM</button>
+    <div class="eyebrow">MULTIPLAYER</div>
+    <h2>Private Room</h2>
+    <p>Buat room baru sebagai host atau gabung dengan kode enam karakter.</p>
+    <label>Nama pemain</label><input id="playerName" maxlength="16" placeholder="Ranger01">
+    <label>Kode room</label><input id="roomCodeInput" maxlength="6" placeholder="ABC123" style="text-transform:uppercase">
+    <div class="actions">
+      <button class="primary" id="createRoom">CREATE ROOM</button>
+      <button id="joinRoom">JOIN ROOM</button>
+      <button onclick="showView('home')">KEMBALI</button>
     </div>
-
-    <div id="menuError"></div>
-    <div id="connectionStatus">Menghubungkan ke server...</div>
-
-    <div style="border-top:1px solid #55e7ff22;margin-top:16px;padding-top:12px;color:#89aabc;font-size:11px;line-height:1.7">
-      Buat room, bagikan kode ke teman, lalu atur mode pertandingan. Hanya host yang bisa mengubah pengaturan.
-    </div>
+    <div id="error"></div>
+    <div id="connection" class="muted">Menghubungkan...</div>
   </div>
+</section>
+
+<section id="loadout" class="view">
+  <div class="panel">
+    <div class="eyebrow">ARMORY / LOADOUT</div><h2>Configure Your Build</h2>
+    <p>Pilihan loadout disimpan di browser ini. Kamu bisa menggantinya sebelum masuk pertandingan.</p>
+    <label>Senjata utama</label>
+    <select id="weaponSelect">
+      <option value="rifle">VXR-7 Assault Rifle</option>
+      <option value="smg">Viper-9 SMG</option>
+      <option value="shotgun">Bulldog Shotgun</option>
+      <option value="sniper">Spectre Sniper</option>
+    </select>
+    <label>Operator</label>
+    <select id="operatorSelect">
+      <option value="ranger">Ranger — Standard</option>
+      <option value="phantom">Phantom — Stealth</option>
+      <option value="nova">Nova — Neon</option>
+      <option value="titan">Titan — Heavy</option>
+    </select>
+    <label>Crosshair style</label>
+    <select id="crosshairSelect">
+      <option value="cross">Cross</option>
+      <option value="dot">Dot</option>
+      <option value="circle">Circle</option>
+    </select>
+    <label>Camera sensitivity</label>
+    <input id="sensitivity" type="range" min="2" max="15" value="6">
+    <p class="muted">Senjata di versi ini mengubah interval tembakan visual. Damage pertandingan tetap ditentukan oleh pengaturan room di server.</p>
+    <div class="actions"><button class="primary" id="saveLoadout">SIMPAN LOADOUT</button><button onclick="showView('home')">KEMBALI</button></div>
+    <div id="loadoutMessage" class="muted"></div>
+  </div>
+</section>
+
+<section id="shop" class="view">
+  <div class="eyebrow">COLLECTION / MARKET</div><h2>Operator & Skin Shop</h2>
+  <p>Kredit hanya mata uang virtual dalam game ini. Tidak ada pembayaran sungguhan.</p>
+  <div class="grid" id="shopGrid"></div>
+</section>
+
+<section id="settings" class="view">
+  <div class="panel"><div class="eyebrow">SYSTEM</div><h2>Game Settings</h2>
+    <label>Graphics quality</label><select id="graphics"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+    <label>Default camera</label><select id="defaultCamera"><option value="tpp">Third Person (TPP)</option><option value="fpp">First Person (FPP)</option></select>
+    <div class="actions"><button class="primary" id="saveSettings">SIMPAN</button><button onclick="showView('home')">KEMBALI</button></div>
+    <p class="muted">Pilihan grafis mengubah kualitas render, bukan performa jaringan.</p>
+  </div>
+</section>
+</main>
 </div>
 
-<div id="hud">
-  <div class="topbar">
-    <div class="card">
-      <div>HP: <b id="healthText">100</b></div>
-      <div id="healthBar"><div id="healthFill"></div></div>
-      <div style="margin-top:5px">KILL: <b id="scoreText">0</b></div>
-      <div style="margin-top:3px">NYAWA: <b id="livesText">∞</b></div>
-    </div>
-
-    <div class="card" style="text-align:center">
-      <div style="font-size:9px;color:#8eafc4">ROOM CODE</div>
-      <div id="roomCode">------</div>
-      <button id="copyButton" class="small" style="margin-top:5px">SALIN</button>
-    </div>
+<div id="gameHud">
+  <div id="topHud">
+    <div class="hudCard">HP <b id="hp">100</b><div id="healthBar"><div id="healthFill"></div></div><div style="margin-top:5px">KILL <b id="kills">0</b></div></div>
+    <div class="hudCard" style="text-align:center">ROOM<div id="roomCodeHud" style="font-size:17px;color:var(--c);letter-spacing:2px">------</div><button class="small" id="copyCode">SALIN KODE</button></div>
   </div>
-
-  <div id="hudActions">
-    <button id="settingsButton" class="small">⚙ SETTINGS</button>
-    <button id="readyButton" class="small">READY</button>
-    <button id="leaveButton" class="small">KELUAR</button>
+  <div id="status">LOBBY</div>
+  <div id="hudButtons">
+    <button class="small" id="settingsRoom">⚙ ROOM</button>
+    <button class="small" id="leaveRoom">KELUAR</button>
+    <button class="small" id="switchCam">TPP / FPP</button>
   </div>
-
-  <div id="matchStatus">LOBBY</div>
-
-  <div id="playersBox" class="card">
-    <b>PEMAIN</b>
-    <div id="playersList">Menunggu...</div>
-  </div>
-
-  <div id="leaderboardBox" class="card">
-    <b>LEADERBOARD</b>
-    <div id="leaderboardList">Belum ada skor</div>
-  </div>
-
-  <div id="notice">Menunggu pertandingan...</div>
-
-  <div id="controls">
-    <div id="joystick"><div id="stick"></div></div>
-    <div id="lookHint">Geser sisi kanan layar untuk memutar kamera</div>
-    <button id="fireButton">FIRE</button>
-  </div>
+  <div id="rightHud" class="hudCard"><b>PEMAIN</b><div id="playersList"></div><hr style="border-color:#55e7ff22"><b>SKOR</b><div id="leaderboard"></div></div>
+  <div id="notice">Menunggu host...</div>
+  <div id="joystick"><div id="stick"></div></div>
+  <button id="fire">FIRE</button>
+  <button id="cameraSwitch">CAM: TPP</button>
 </div>
 
-<div id="settingsOverlay">
-  <div id="settingsPanel">
-    <h2>ROOM SETTINGS</h2>
-    <p id="settingsPermission" class="settingsHint">Pengaturan room</p>
-
-    <label>Mode</label>
-    <select id="settingMode">
-      <option value="infinity">Infinity — respawn terus</option>
-      <option value="lives">Limited Lives — nyawa terbatas</option>
-    </select>
-
-    <label>Nyawa per pemain</label>
-    <select id="settingLives">
-      <option value="3">3 nyawa</option>
-      <option value="5">5 nyawa</option>
-      <option value="10">10 nyawa</option>
-    </select>
-
-    <label>Durasi pertandingan</label>
-    <select id="settingTime">
-      <option value="0">Tanpa batas waktu</option>
-      <option value="5">5 menit</option>
-      <option value="10">10 menit</option>
-      <option value="15">15 menit</option>
-      <option value="30">30 menit</option>
-    </select>
-
-    <label>Target kill</label>
-    <select id="settingKills">
-      <option value="0">Tanpa batas kill</option>
-      <option value="5">5 kill</option>
-      <option value="10">10 kill</option>
-      <option value="20">20 kill</option>
-      <option value="30">30 kill</option>
-    </select>
-
-    <label>Damage</label>
-    <select id="settingDamage">
-      <option value="10">10 — rendah</option>
-      <option value="25">25 — normal</option>
-      <option value="50">50 — tinggi</option>
-      <option value="100">100 — sekali hit</option>
-    </select>
-
-    <div class="grid2" style="margin-top:15px">
-      <button id="saveSettingsButton" class="primary">SIMPAN</button>
-      <button id="closeSettingsButton">TUTUP</button>
-    </div>
-    <button id="startMatchButton" class="primary" style="width:100%;margin-top:9px">MULAI PERTANDINGAN</button>
-    <div id="settingsMessage"></div>
-  </div>
-</div>
-
-<div id="resultsOverlay">
-  <div id="resultsPanel">
-    <h2 style="color:#55e7ff">MATCH SELESAI</h2>
-    <h3 id="winnerText">Hasil pertandingan</h3>
-    <p id="resultReason" style="color:#aac8da;font-size:13px"></p>
-    <div id="resultScores" style="line-height:1.9;font-size:13px;margin-bottom:16px"></div>
-    <button id="returnLobbyButton" class="primary" style="width:100%">KEMBALI KE LOBBY</button>
+<div id="modal">
+  <div id="modalPanel">
+    <h2 style="color:var(--c);margin-top:0">ROOM CONTROL</h2>
+    <div id="hostMessage" class="muted"></div>
+    <label>Mode pertandingan</label><select id="mode"><option value="infinity">Infinity — respawn terus</option><option value="lives">Limited Lives</option></select>
+    <label>Nyawa</label><select id="lives"><option value="3">3</option><option value="5">5</option><option value="10">10</option></select>
+    <label>Durasi</label><select id="time"><option value="0">Tanpa batas</option><option value="5">5 menit</option><option value="10">10 menit</option><option value="15">15 menit</option><option value="30">30 menit</option></select>
+    <label>Target kill</label><select id="killLimit"><option value="0">Tanpa batas</option><option value="5">5</option><option value="10">10</option><option value="20">20</option><option value="30">30</option></select>
+    <label>Damage</label><select id="damage"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select>
+    <div class="actions"><button class="primary" id="saveRoomSettings">SIMPAN</button><button id="startMatch">MULAI</button><button id="closeModal">TUTUP</button></div>
+    <div id="modalError" class="muted"></div>
   </div>
 </div>
 
@@ -202,795 +195,508 @@ label{font-size:12px;color:#a6c8dc;display:block;margin:10px 0 5px}
 <script>
 (() => {
 "use strict";
-
 const $ = id => document.getElementById(id);
 const socket = io();
 
-let myId = null;
-let roomCode = null;
-let inRoom = false;
-let isHost = false;
-let isReady = false;
-let myPlayer = null;
-let currentSettings = null;
-let phase = "lobby";
+const defaultProfile = {
+  credits: 500, xp: 0, kills: 0, matches: 0, owned: ["cyan"],
+  skin: "cyan", weapon: "rifle", operator: "ranger",
+  crosshair: "cross", sensitivity: 6, camera: "tpp", graphics: "high"
+};
 
-let yaw = 0;
-let pitch = 0.22;
-let moveX = 0;
-let moveY = 0;
-let joystickId = null;
-let lookId = null;
-let lastLookX = 0;
-let lastLookY = 0;
-let lastSend = 0;
-let lastShot = 0;
-let fireHeld = false;
-let frameTime = 0;
-let touchIdentifier = null;
+function loadProfile() {
+  try {
+    return {...defaultProfile, ...JSON.parse(localStorage.getItem("nfpro-profile") || "{}")};
+  } catch {
+    return {...defaultProfile};
+  }
+}
+let profile = loadProfile();
+function saveProfile() {
+  localStorage.setItem("nfpro-profile", JSON.stringify(profile));
+  renderProfile();
+}
+function renderProfile() {
+  $("credits").textContent = profile.credits;
+  $("xp").textContent = profile.xp;
+  $("level").textContent = 1 + Math.floor(profile.xp / 500);
+  $("totalKills").textContent = profile.kills;
+  $("totalMatches").textContent = profile.matches;
+  $("profileName").textContent = ($("playerName").value || "RANGER").toUpperCase();
+}
+function showView(id) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  $(id).classList.add("active");
+  $("app").scrollTop = 0;
+}
+window.showView = showView;
 
-const remotes = new Map();
-const projectiles = new Map();
-const keys = new Set();
+const shopItems = [
+  {id:"cyan",name:"Neon Cyan",price:0,color:"#55e7ff",desc:"Standard neon operator armor."},
+  {id:"crimson",name:"Crimson Pulse",price:350,color:"#ff416d",desc:"Red armor with a combat glow."},
+  {id:"gold",name:"Solar Gold",price:700,color:"#facc15",desc:"Premium golden armor."},
+  {id:"violet",name:"Void Violet",price:900,color:"#a78bfa",desc:"Violet energy operator."},
+  {id:"lime",name:"Toxic Lime",price:550,color:"#a3e635",desc:"Bright lime combat skin."},
+  {id:"ice",name:"Arctic Ice",price:1100,color:"#dbeafe",desc:"Pale ice-themed armor."}
+];
+
+function renderShop() {
+  const grid = $("shopGrid");
+  grid.replaceChildren();
+  shopItems.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "item";
+    const swatch = document.createElement("div");
+    swatch.className = "swatch";
+    swatch.style.background = `linear-gradient(120deg,${item.color},#0b1a2b)`;
+    const title = document.createElement("h3");
+    title.textContent = item.name;
+    const desc = document.createElement("p");
+    desc.textContent = item.desc;
+    const price = document.createElement("p");
+    price.textContent = item.price ? "◈ " + item.price + " CR" : "FREE";
+    const btn = document.createElement("button");
+    btn.className = "primary";
+    const owned = profile.owned.includes(item.id);
+    btn.textContent = owned ? (profile.skin === item.id ? "DIPAKAI ✓" : "PAKAI SKIN") : "BELI";
+    btn.disabled = owned && profile.skin === item.id;
+    btn.addEventListener("click", () => {
+      if (profile.owned.includes(item.id)) {
+        profile.skin = item.id;
+      } else {
+        if (profile.credits < item.price) {
+          alert("Kredit tidak cukup. Mainkan pertandingan untuk memperoleh kredit.");
+          return;
+        }
+        profile.credits -= item.price;
+        profile.owned.push(item.id);
+        profile.skin = item.id;
+      }
+      saveProfile();
+      renderShop();
+    });
+    card.append(swatch, title, desc, price, btn);
+    grid.appendChild(card);
+  });
+}
+
+$("weaponSelect").value = profile.weapon;
+$("operatorSelect").value = profile.operator;
+$("crosshairSelect").value = profile.crosshair;
+$("sensitivity").value = profile.sensitivity;
+$("graphics").value = profile.graphics;
+$("defaultCamera").value = profile.camera;
+$("saveLoadout").addEventListener("click", () => {
+  profile.weapon = $("weaponSelect").value;
+  profile.operator = $("operatorSelect").value;
+  profile.crosshair = $("crosshairSelect").value;
+  profile.sensitivity = Number($("sensitivity").value);
+  saveProfile();
+  $("loadoutMessage").textContent = "Loadout tersimpan!";
+});
+$("saveSettings").addEventListener("click", () => {
+  profile.graphics = $("graphics").value;
+  profile.camera = $("defaultCamera").value;
+  saveProfile();
+  applyGraphics();
+  $("loadoutMessage").textContent = "Settings tersimpan.";
+});
+function applyGraphics() {
+  const ratio = profile.graphics === "low" ? 1 : profile.graphics === "medium" ? 1.25 : 1.5;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, ratio));
+}
+renderShop();
+renderProfile();
+$("playerName").value = localStorage.getItem("nfpro-name") || "";
+$("playerName").addEventListener("input", () => {
+  localStorage.setItem("nfpro-name", $("playerName").value);
+  renderProfile();
+});
+
+let myId = null, myPlayer = null, roomCode = null;
+let inRoom = false, isHost = false, phase = "lobby", settings = null;
+let yaw = 0, pitch = .18, moveX = 0, moveY = 0;
+let joystickId = null, lookTouch = null, lastTouchX = 0, lastTouchY = 0;
+let lastSend = 0, lastShot = 0, fireHeld = false, previousFrame = 0;
+let cameraMode = profile.camera || "tpp";
+const remotes = new Map(), shots = new Map(), keys = new Set();
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x07101c);
-scene.fog = new THREE.Fog(0x07101c, 35, 100);
-
-const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.1, 200);
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-renderer.setSize(innerWidth, innerHeight);
+scene.background = new THREE.Color(0x07101b);
+scene.fog = new THREE.Fog(0x07101b, 40, 110);
+const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, .1, 200);
+const renderer = new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.setSize(innerWidth,innerHeight);
+renderer.domElement.id = "gameCanvas";
 document.body.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xa5ddff,0x1b2638,2));
+const light = new THREE.DirectionalLight(0xffffff,1.5);
+light.position.set(10,24,12); scene.add(light);
 
-scene.add(new THREE.HemisphereLight(0x9bdcff, 0x172033, 2));
-
-const sun = new THREE.DirectionalLight(0xffffff, 1.4);
-sun.position.set(12, 25, 10);
-scene.add(sun);
-
-const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(86, 86),
-  new THREE.MeshStandardMaterial({ color: 0x101d2b, roughness: 0.8, metalness: 0.15 })
-);
-floor.rotation.x = -Math.PI / 2;
-floor.position.y = -0.05;
-scene.add(floor);
-
-const grid = new THREE.GridHelper(82, 41, 0x1a90ad, 0x183044);
-grid.position.y = 0.01;
-scene.add(grid);
-
-const wallMat = new THREE.MeshStandardMaterial({
-  color: 0x163347, emissive: 0x062638, metalness: 0.4
-});
-
-function wall(x, z, sx, sz) {
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(sx, 2.5, sz), wallMat);
-  mesh.position.set(x, 1.25, z);
-  scene.add(mesh);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(86,86),
+  new THREE.MeshStandardMaterial({color:0x101d2b,roughness:.8,metalness:.15}));
+floor.rotation.x=-Math.PI/2; scene.add(floor);
+const gridHelper = new THREE.GridHelper(82,41,0x1a90ad,0x183044);
+gridHelper.position.y=.01; scene.add(gridHelper);
+const wallMat = new THREE.MeshStandardMaterial({color:0x163347,emissive:0x062638});
+function wall(x,z,sx,sz) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(sx,2.5,sz),wallMat);
+  m.position.set(x,1.25,z); scene.add(m);
 }
-wall(0, -42, 86, 2);
-wall(0, 42, 86, 2);
-wall(-42, 0, 2, 86);
-wall(42, 0, 2, 86);
+wall(0,-42,86,2); wall(0,42,86,2); wall(-42,0,2,86); wall(42,0,2,86);
 
-for (let i = 0; i < 18; i++) {
-  const angle = i * 2.399;
-  const radius = 8 + (i % 5) * 5;
-  const height = 1.5 + (i % 3);
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(2.3, height, 2.3),
-    new THREE.MeshStandardMaterial({
-      color: i % 2 ? 0x17465a : 0x252d50,
-      emissive: i % 2 ? 0x073040 : 0x10152e
-    })
-  );
-  mesh.position.set(Math.cos(angle) * radius, height / 2, Math.sin(angle) * radius);
-  mesh.rotation.y = angle;
-  scene.add(mesh);
+for(let i=0;i<18;i++){
+  const a=i*2.399,r=8+(i%5)*5,h=1.5+(i%3);
+  const m=new THREE.Mesh(new THREE.BoxGeometry(2.3,h,2.3),
+    new THREE.MeshStandardMaterial({color:i%2?0x17465a:0x252d50,emissive:i%2?0x073040:0x10152e}));
+  m.position.set(Math.cos(a)*r,h/2,Math.sin(a)*r);m.rotation.y=a;scene.add(m);
 }
-
-function createCharacter(data) {
-  const group = new THREE.Group();
-  const color = data.color || "#55e7ff";
-  const material = new THREE.MeshStandardMaterial({
-    color, emissive: color, emissiveIntensity: 0.2, roughness: 0.45
-  });
-
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.48, 1, 4, 8), material);
-  body.position.y = 1;
-  group.add(body);
-
-  const visor = new THREE.Mesh(
-    new THREE.BoxGeometry(0.48, 0.15, 0.12),
-    new THREE.MeshBasicMaterial({ color: 0xffffff })
-  );
-  visor.position.set(0, 1.43, -0.38);
-  group.add(visor);
-
-  scene.add(group);
-  return group;
+function selectedColor() {
+  return (shopItems.find(s=>s.id===profile.skin)||shopItems[0]).color;
 }
-
-function disposeObject(obj) {
-  obj.traverse(child => {
-    if (child.geometry) child.geometry.dispose();
-    if (child.material) {
-      if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
-      else child.material.dispose();
-    }
+function character(data, local=false) {
+  const g=new THREE.Group();
+  const color=local?selectedColor():(data.color||"#55e7ff");
+  const mat=new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.22});
+  const body=new THREE.Mesh(new THREE.CapsuleGeometry(.48,1,4,8),mat);
+  body.position.y=1;g.add(body);
+  const visor=new THREE.Mesh(new THREE.BoxGeometry(.48,.15,.12),
+    new THREE.MeshBasicMaterial({color:0xffffff}));
+  visor.position.set(0,1.43,-.38);g.add(visor);
+  if(profile.operator==="titan" && local) {
+    const armor=new THREE.Mesh(new THREE.BoxGeometry(.9,.55,.65),
+      new THREE.MeshStandardMaterial({color,metalness:.8,roughness:.3}));
+    armor.position.y=1.05;g.add(armor);
+  }
+  scene.add(g);return g;
+}
+function dispose(g) {
+  if(!g)return;
+  g.traverse(o=>{
+    if(o.geometry)o.geometry.dispose();
+    if(o.material)Array.isArray(o.material)?o.material.forEach(m=>m.dispose()):o.material.dispose();
   });
 }
-
-function clearWorld() {
-  for (const id of [...remotes.keys()]) removeRemote(id);
-  for (const id of [...projectiles.keys()]) removeProjectile(id);
+function clearGameWorld(){
+  for(const id of remotes.keys())removeRemote(id);
+  for(const id of shots.keys())removeShot(id);
 }
-
-function addRemote(data) {
-  if (!data || data.id === myId) return;
-
-  let p = remotes.get(data.id);
-  if (!p) {
-    p = {
-      mesh: createCharacter(data),
-      target: { x: data.x, z: data.z, rot: data.rot || 0 },
-      name: data.name || "Ranger",
-      hp: data.hp ?? 100,
-      score: data.score || 0,
-      livesLeft: data.livesLeft ?? 0,
-      alive: data.alive !== false
-    };
-    remotes.set(data.id, p);
+function addRemote(d){
+  if(!d||d.id===myId)return;
+  let p=remotes.get(d.id);
+  if(!p){
+    p={mesh:character(d),target:{x:d.x,z:d.z,rot:d.rot||0},name:d.name||"Ranger",alive:d.alive!==false};
+    remotes.set(d.id,p);
   }
-
-  p.target.x = data.x;
-  p.target.z = data.z;
-  p.target.rot = data.rot || 0;
-  p.name = data.name || p.name;
-  p.hp = data.hp ?? p.hp;
-  p.score = data.score ?? p.score;
-  p.livesLeft = data.livesLeft ?? p.livesLeft;
-  p.alive = data.alive !== false;
-  p.mesh.visible = p.alive;
+  p.target={x:d.x,z:d.z,rot:d.rot||0};p.name=d.name||p.name;
+  p.alive=d.alive!==false;p.mesh.visible=p.alive;
 }
-
-function removeRemote(id) {
-  const p = remotes.get(id);
-  if (!p) return;
-  scene.remove(p.mesh);
-  disposeObject(p.mesh);
-  remotes.delete(id);
+function removeRemote(id){
+  const p=remotes.get(id);if(!p)return;
+  scene.remove(p.mesh);dispose(p.mesh);remotes.delete(id);
 }
-
-function addProjectile(data) {
-  if (!data || projectiles.has(data.id)) return;
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(0.13, 8, 8),
-    new THREE.MeshBasicMaterial({ color: data.color || "#55e7ff" })
-  );
-  mesh.position.set(data.x, 1.25, data.z);
-  scene.add(mesh);
-  projectiles.set(data.id, { mesh, data, born: performance.now() });
+function addShot(d){
+  if(!d||shots.has(d.id))return;
+  const mesh=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),
+    new THREE.MeshBasicMaterial({color:d.color||selectedColor()}));
+  scene.add(mesh);shots.set(d.id,{mesh,data:d,born:performance.now()});
 }
-
-function removeProjectile(id) {
-  const p = projectiles.get(id);
-  if (!p) return;
-  scene.remove(p.mesh);
-  p.mesh.geometry.dispose();
-  p.mesh.material.dispose();
-  projectiles.delete(id);
+function removeShot(id){
+  const s=shots.get(id);if(!s)return;
+  scene.remove(s.mesh);s.mesh.geometry.dispose();s.mesh.material.dispose();shots.delete(id);
 }
-
-function setError(message) {
-  $("menuError").textContent = message || "";
+function updateCameraButton(){
+  const label=cameraMode==="tpp"?"TPP":"FPP";
+  $("switchCam").textContent="CAM: "+label;
+  $("cameraSwitch").textContent="CAM: "+label;
 }
-
-function playerName() {
-  return $("nameInput").value.trim().slice(0, 16) || "Ranger";
+function switchCamera(){
+  cameraMode=cameraMode==="tpp"?"fpp":"tpp";
+  profile.camera=cameraMode;saveProfile();updateCameraButton();
 }
+$("switchCam").addEventListener("click",switchCamera);
+$("cameraSwitch").addEventListener("click",switchCamera);
+updateCameraButton();
 
-function showConnection() {
-  $("connectionStatus").textContent = socket.connected
-    ? "● Terhubung ke server"
-    : "○ Menghubungkan ke server...";
-  $("connectionStatus").style.color = socket.connected ? "#4ade80" : "#facc15";
-  $("createButton").disabled = !socket.connected;
-  $("joinButton").disabled = !socket.connected;
+function connectStatus(){
+  $("connection").textContent=socket.connected?"● Server terhubung":"○ Menghubungkan...";
+  $("connection").style.color=socket.connected?"#4ade80":"#facc15";
+  $("createRoom").disabled=!socket.connected;$("joinRoom").disabled=!socket.connected;
 }
-
-socket.on("connect", showConnection);
-socket.on("disconnect", () => {
-  showConnection();
-  if (inRoom) {
-    inRoom = false;
-    $("hud").style.display = "none";
-    $("roomMenu").style.display = "flex";
-    $("settingsOverlay").style.display = "none";
-    $("resultsOverlay").style.display = "none";
-    clearWorld();
-    if (myPlayer) {
-      scene.remove(myPlayer);
-      disposeObject(myPlayer);
-      myPlayer = null;
-    }
-    setError("Koneksi terputus. Coba bergabung kembali.");
+socket.on("connect",connectStatus);
+socket.on("disconnect",()=>{
+  connectStatus();
+  if(inRoom){
+    inRoom=false;$("gameHud").style.display="none";$("app").style.display="block";
+    clearGameWorld();if(myPlayer){scene.remove(myPlayer);dispose(myPlayer);myPlayer=null;}
+    $("error").textContent="Koneksi terputus. Coba buat atau gabung room kembali.";
+    showView("play");
   }
 });
-
-$("createButton").addEventListener("click", () => {
-  setError("");
-  if (!socket.connected) return setError("Server belum terhubung.");
-  socket.emit("createRoom", { name: playerName() });
+$("createRoom").addEventListener("click",()=>{
+  $("error").textContent="";
+  socket.emit("createRoom",{name:$("playerName").value.trim()||"Ranger"});
 });
-
-$("joinButton").addEventListener("click", () => {
-  setError("");
-  const code = $("codeInput").value.trim().toUpperCase();
-  if (code.length !== 6) return setError("Kode room harus 6 karakter.");
-  if (!socket.connected) return setError("Server belum terhubung.");
-  socket.emit("joinRoom", { code, name: playerName() });
+$("joinRoom").addEventListener("click",()=>{
+  const code=$("roomCodeInput").value.trim().toUpperCase();
+  if(code.length!==6){$("error").textContent="Kode room harus 6 karakter.";return;}
+  $("error").textContent="";
+  socket.emit("joinRoom",{code,name:$("playerName").value.trim()||"Ranger"});
 });
+socket.on("roomError",m=>$("error").textContent=m);
+socket.on("settingsError",m=>$("modalError").textContent=m);
 
-$("leaveButton").addEventListener("click", () => {
-  if (inRoom) socket.emit("leaveRoom");
+socket.on("welcome",d=>{
+  myId=d.id;roomCode=d.roomCode;inRoom=true;phase="lobby";
+  if(myPlayer){scene.remove(myPlayer);dispose(myPlayer);}
+  myPlayer=character(d.player,true);
+  myPlayer.position.set(d.player.x,0,d.player.z);
+  yaw=d.player.rot||0;pitch=.18;
+  $("app").style.display="none";$("gameHud").style.display="block";
+  $("roomCodeHud").textContent=roomCode;
+  $("hp").textContent=d.player.hp;$("kills").textContent=d.player.score;
+  $("healthFill").style.width=d.player.hp+"%";
+  $("notice").textContent="Menunggu host memulai...";
 });
-
-$("copyButton").addEventListener("click", async () => {
-  if (!roomCode) return;
-  try {
-    await navigator.clipboard.writeText(roomCode);
-  } catch {
-    const field = document.createElement("textarea");
-    field.value = roomCode;
-    document.body.appendChild(field);
-    field.select();
-    document.execCommand("copy");
-    field.remove();
-  }
-  $("copyButton").textContent = "TERSALIN";
-  setTimeout(() => $("copyButton").textContent = "SALIN", 1200);
+socket.on("world",d=>{
+  clearGameWorld();
+  (d.players||[]).forEach(addRemote);(d.shots||[]).forEach(addShot);
 });
-
-$("settingsButton").addEventListener("click", () => {
-  if (!inRoom) return;
-  $("settingsMessage").textContent = "";
-  $("settingsOverlay").style.display = "flex";
+socket.on("playerJoined",addRemote);
+socket.on("playerMoved",d=>{
+  if(d.id!==myId)addRemote(d);
 });
-
-$("closeSettingsButton").addEventListener("click", () => {
-  $("settingsOverlay").style.display = "none";
+socket.on("playerLeft",removeRemote);
+socket.on("playerRespawn",d=>{
+  if(d.id===myId&&myPlayer){
+    myPlayer.visible=true;myPlayer.position.set(d.x,0,d.z);
+    $("hp").textContent=d.hp;$("healthFill").style.width=d.hp+"%";
+    $("notice").textContent="RESPAWN!";
+    setTimeout(()=>{if(phase==="playing")$("notice").textContent="";},900);
+  }else addRemote(d);
 });
-
-$("saveSettingsButton").addEventListener("click", () => {
-  if (!isHost) {
-    $("settingsMessage").textContent = "Hanya host yang bisa mengubah pengaturan.";
-    return;
-  }
-
-  socket.emit("updateRoomSettings", {
-    mode: $("settingMode").value,
-    lives: Number($("settingLives").value),
-    timeLimit: Number($("settingTime").value),
-    killLimit: Number($("settingKills").value),
-    damage: Number($("settingDamage").value)
+socket.on("roomInfo",d=>{
+  isHost=d.hostId===myId;phase=d.phase;settings=d.settings;
+  $("hostMessage").textContent=isHost?"Kamu host. Kamu bisa mengatur room.":"Kamu bukan host. Hanya host yang bisa mengubah pengaturan.";
+  ["mode","lives","time","killLimit","damage"].forEach(id=>{
+    const map={mode:"mode",lives:"lives",time:"timeLimit",killLimit:"killLimit",damage:"damage"};
+    if(settings&&settings[map[id]]!==undefined)$(id).value=String(settings[map[id]]);
+    $(id).disabled=!isHost||phase!=="lobby";
+  });
+  $("saveRoomSettings").disabled=!isHost||phase!=="lobby";
+  $("startMatch").disabled=!isHost||phase!=="lobby";
+  $("playersList").replaceChildren();
+  (d.players||[]).forEach(p=>{
+    const div=document.createElement("div");
+    div.textContent=(p.id===d.hostId?"★ ":"• ")+p.name+(p.ready?" ✓":"");
+    $("playersList").appendChild(div);
+  });
+  if(phase==="lobby")$("notice").textContent=isHost?"Kamu host — atur room lalu mulai!":"Menunggu host...";
+});
+socket.on("roomSettingsUpdated",s=>{settings=s;});
+$("settingsRoom").addEventListener("click",()=>{$("modal").style.display="flex";});
+$("closeModal").addEventListener("click",()=>{$("modal").style.display="none";});
+$("saveRoomSettings").addEventListener("click",()=>{
+  socket.emit("updateRoomSettings",{
+    mode:$("mode").value,lives:Number($("lives").value),
+    timeLimit:Number($("time").value),killLimit:Number($("killLimit").value),
+    damage:Number($("damage").value)
   });
 });
-
-$("startMatchButton").addEventListener("click", () => {
-  socket.emit("startMatch");
+$("startMatch").addEventListener("click",()=>socket.emit("startMatch"));
+socket.on("matchStarted",d=>{
+  phase="playing";settings=d.settings;$("modal").style.display="none";
+  $("notice").textContent="FIGHT!";
+  setTimeout(()=>{if(phase==="playing")$("notice").textContent="";},1000);
+  (d.players||[]).forEach(addRemote);
 });
-
-$("readyButton").addEventListener("click", () => {
-  isReady = !isReady;
-  socket.emit("setReady", isReady);
-  $("readyButton").textContent = isReady ? "READY ✓" : "READY";
+socket.on("matchStatus",d=>{
+  phase=d.status;settings=d.settings||settings;
+  const sec=d.secondsLeft||0;
+  $("status").textContent=(phase==="playing"?"MATCH LIVE":phase==="ended"?"MATCH ENDED":"LOBBY")+
+    (sec>0?" · "+Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0"):"");
 });
-
-$("returnLobbyButton").addEventListener("click", () => {
-  $("resultsOverlay").style.display = "none";
-  $("notice").textContent = "Pertandingan selesai.";
+socket.on("playerHit",d=>{
+  if(d.target===myId){$("hp").textContent=d.hp;$("healthFill").style.width=d.hp+"%";}
 });
-
-socket.on("roomError", message => setError(message));
-socket.on("settingsError", message => {
-  $("settingsMessage").textContent = message;
+socket.on("playerDown",d=>{
+  if(d.id===myId&&myPlayer){myPlayer.visible=false;$("notice").textContent="ELIMINATED";}
+  if(d.by===myId){$("kills").textContent=d.score;profile.kills++;saveProfile();}
+  if(d.id!==myId){const p=remotes.get(d.id);if(p){p.alive=false;p.mesh.visible=false;}}
 });
-
-socket.on("welcome", data => {
-  myId = data.id;
-  roomCode = data.roomCode;
-  inRoom = true;
-  phase = "lobby";
-
-  if (myPlayer) {
-    scene.remove(myPlayer);
-    disposeObject(myPlayer);
-  }
-
-  myPlayer = createCharacter(data.player);
-  myPlayer.position.set(data.player.x, 0, data.player.z);
-  yaw = data.player.rot || 0;
-  pitch = 0.22;
-
-  $("roomMenu").style.display = "none";
-  $("hud").style.display = "block";
-  $("roomCode").textContent = roomCode;
-  $("healthText").textContent = data.player.hp;
-  $("healthFill").style.width = data.player.hp + "%";
-  $("scoreText").textContent = data.player.score;
-  $("livesText").textContent = "∞";
-  $("notice").textContent = "Menunggu host memulai pertandingan";
-  setError("");
-});
-
-socket.on("world", data => {
-  clearWorld();
-  (data.players || []).forEach(addRemote);
-  (data.shots || []).forEach(addProjectile);
-});
-
-socket.on("playerJoined", addRemote);
-socket.on("playerMoved", data => {
-  if (data.id === myId) {
-    if (myPlayer && !data.alive) myPlayer.visible = false;
-    return;
-  }
-  addRemote(data);
-});
-
-socket.on("playerLeft", removeRemote);
-socket.on("playerRespawn", data => {
-  if (data.id === myId) {
-    if (myPlayer) {
-      myPlayer.visible = true;
-      myPlayer.position.set(data.x, 0, data.z);
-    }
-    $("healthText").textContent = data.hp;
-    $("healthFill").style.width = data.hp + "%";
-    $("livesText").textContent = currentSettings && currentSettings.mode === "lives"
-      ? data.livesLeft : "∞";
-    $("notice").textContent = "RESPAWN!";
-    setTimeout(() => {
-      if (inRoom && phase === "playing") $("notice").textContent = "";
-    }, 900);
-  } else {
-    addRemote(data);
-  }
-});
-
-socket.on("roomInfo", info => {
-  isHost = info.hostId === myId;
-  phase = info.phase;
-  currentSettings = info.settings || currentSettings;
-
-  $("settingsPermission").textContent = isHost
-    ? "Kamu adalah host. Pengaturan hanya dapat diubah saat lobby."
-    : "Kamu bukan host. Hanya host yang dapat mengubah pengaturan.";
-
-  const canEdit = isHost && phase === "lobby";
-  ["settingMode", "settingLives", "settingTime", "settingKills", "settingDamage"]
-    .forEach(id => $(id).disabled = !canEdit);
-
-  $("saveSettingsButton").disabled = !canEdit;
-  $("startMatchButton").disabled = !isHost || phase !== "lobby";
-  $("startMatchButton").textContent = phase === "lobby" ? "MULAI PERTANDINGAN" : "PERTANDINGAN BERJALAN";
-
-  const list = $("playersList");
-  list.replaceChildren();
-
-  (info.players || []).forEach(p => {
-    const row = document.createElement("div");
-    row.style.color = p.id === info.hostId ? "#55e7ff" : "#d0e8f5";
-    const ready = p.ready ? " ✓" : "";
-    row.textContent = (p.id === info.hostId ? "★ " : "• ") + p.name + ready;
-    list.appendChild(row);
+socket.on("leaderboard",list=>{
+  $("leaderboard").replaceChildren();
+  (list||[]).slice(0,8).forEach((p,i)=>{
+    const div=document.createElement("div");
+    div.textContent=(i+1)+". "+p.name+" — "+p.score;
+    $("leaderboard").appendChild(div);
+    if(p.id===myId)$("kills").textContent=p.score;
   });
-
-  if (!info.players || !info.players.length) list.textContent = "Belum ada pemain";
-
-  if (currentSettings) applySettingsToForm(currentSettings);
-
-  if (phase === "lobby") {
-    $("notice").textContent = isHost
-      ? "Kamu host — atur room lalu mulai!"
-      : "Menunggu host memulai pertandingan";
-  }
+});
+socket.on("shotSpawn",addShot);socket.on("shotRemove",removeShot);
+socket.on("matchEnded",d=>{
+  phase="ended";profile.matches++;profile.xp+=100;profile.credits+=150;saveProfile();
+  $("notice").textContent="MATCH SELESAI — "+(d.winnerName||"Tidak ada pemenang");
+  setTimeout(()=>{if(inRoom)$("notice").textContent="Match selesai. Host dapat mengatur room.";},4000);
+});
+$("copyCode").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(roomCode||"");$("copyCode").textContent="TERSALIN";}
+  catch{$("copyCode").textContent=roomCode||"SALIN";}
+  setTimeout(()=>$("copyCode").textContent="SALIN KODE",1000);
+});
+$("leaveRoom").addEventListener("click",()=>{if(inRoom)socket.emit("leaveRoom");});
+socket.on("roomLeft",()=>{
+  inRoom=false;roomCode=null;myId=null;phase="lobby";
+  $("gameHud").style.display="none";$("app").style.display="block";
+  clearGameWorld();if(myPlayer){scene.remove(myPlayer);dispose(myPlayer);myPlayer=null;}
+  showView("play");
 });
 
-function applySettingsToForm(s) {
-  $("settingMode").value = s.mode;
-  $("settingLives").value = String(s.lives);
-  $("settingTime").value = String(s.timeLimit);
-  $("settingKills").value = String(s.killLimit);
-  $("settingDamage").value = String(s.damage);
-  $("livesText").textContent = s.mode === "infinity" ? "∞" : String(s.lives);
+function shoot(){
+  if(!inRoom||phase!=="playing"||!myPlayer||!myPlayer.visible)return;
+  const now=performance.now();
+  const rates={rifle:260,smg:250,shotgun:600,sniper:850};
+  if(now-lastShot<(rates[profile.weapon]||300))return;
+  lastShot=now;
+  socket.emit("shoot",{dx:-Math.sin(yaw),dz:-Math.cos(yaw)});
 }
+$("fire").addEventListener("pointerdown",e=>{e.preventDefault();fireHeld=true;shoot();});
+["pointerup","pointercancel","pointerleave"].forEach(ev=>$("fire").addEventListener(ev,()=>fireHeld=false));
+renderer.domElement.addEventListener("contextmenu",e=>e.preventDefault());
 
-socket.on("roomSettingsUpdated", settings => {
-  currentSettings = settings;
-  applySettingsToForm(settings);
-  $("settingsMessage").textContent = "Pengaturan tersimpan.";
+renderer.domElement.addEventListener("pointerdown",e=>{
+  if(!inRoom||e.pointerType==="touch")return;
+  if(e.button===2||e.button===1){lookTouch=e.pointerId;lastTouchX=e.clientX;lastTouchY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId);}
+  else if(e.button===0)shoot();
 });
-
-socket.on("matchStarted", data => {
-  phase = "playing";
-  currentSettings = data.settings;
-  applySettingsToForm(data.settings);
-  $("settingsOverlay").style.display = "none";
-  $("resultsOverlay").style.display = "none";
-  $("notice").textContent = "FIGHT!";
-  setTimeout(() => {
-    if (phase === "playing") $("notice").textContent = "";
-  }, 1200);
-
-  const me = (data.players || []).find(p => p.id === myId);
-  if (me && myPlayer) {
-    myPlayer.position.set(me.x, 0, me.z);
-    myPlayer.visible = true;
-    yaw = me.rot || 0;
-    $("healthText").textContent = me.hp;
-    $("healthFill").style.width = me.hp + "%";
-    $("scoreText").textContent = me.score;
-  }
-  (data.players || []).forEach(addRemote);
+renderer.domElement.addEventListener("pointermove",e=>{
+  if(e.pointerId!==lookTouch)return;
+  const sens=(Number(profile.sensitivity)||6)*.001;
+  yaw-=(e.clientX-lastTouchX)*sens;
+  pitch=THREE.MathUtils.clamp(pitch+(e.clientY-lastTouchY)*sens*.7,-.15,.75);
+  lastTouchX=e.clientX;lastTouchY=e.clientY;
 });
+renderer.domElement.addEventListener("pointerup",e=>{if(e.pointerId===lookTouch)lookTouch=null;});
+renderer.domElement.addEventListener("pointercancel",()=>lookTouch=null);
 
-socket.on("matchStatus", data => {
-  phase = data.status;
-  const s = data.settings || currentSettings;
-  const seconds = data.secondsLeft || 0;
-  const timer = seconds > 0
-    ? " · " + Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0")
-    : "";
-
-  $("matchStatus").textContent =
-    (data.status === "playing" ? "MATCH BERLANGSUNG" :
-    data.status === "ended" ? "MATCH SELESAI" : "LOBBY") + timer;
-
-  if (s) currentSettings = s;
+$("joystick").addEventListener("pointerdown",e=>{
+  e.preventDefault();joystickId=e.pointerId;$("joystick").setPointerCapture(e.pointerId);updateStick(e);
 });
+$("joystick").addEventListener("pointermove",e=>{if(e.pointerId===joystickId)updateStick(e);});
+function updateStick(e){
+  const r=$("joystick").getBoundingClientRect();
+  let dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;
+  const len=Math.hypot(dx,dy),max=36;
+  if(len>max){dx=dx/len*max;dy=dy/len*max;}
+  moveX=dx/max;moveY=dy/max;$("stick").style.transform=`translate(${dx}px,${dy}px)`;
+}
+function resetStick(){joystickId=null;moveX=0;moveY=0;$("stick").style.transform="translate(0px,0px)";}
+["pointerup","pointercancel","lostpointercapture"].forEach(ev=>$("joystick").addEventListener(ev,resetStick));
 
-socket.on("playerHit", data => {
-  if (data.target === myId) {
-    $("healthText").textContent = data.hp;
-    $("healthFill").style.width = data.hp + "%";
-  } else {
-    const p = remotes.get(data.target);
-    if (p) p.hp = data.hp;
-  }
-});
-
-socket.on("playerDown", data => {
-  if (data.id === myId) {
-    if (myPlayer) myPlayer.visible = false;
-    $("notice").textContent = "TERELIMINASI";
-    $("livesText").textContent =
-      currentSettings && currentSettings.mode === "lives"
-        ? String(data.livesLeft) : "∞";
-  } else {
-    const p = remotes.get(data.id);
-    if (p) {
-      p.mesh.visible = false;
-      p.alive = false;
+renderer.domElement.addEventListener("touchstart",e=>{
+  if(!inRoom)return;
+  for(const t of e.changedTouches){
+    if(t.clientX>innerWidth*.35&&t.clientY<innerHeight-150){
+      lookTouch=t.identifier;lastTouchX=t.clientX;lastTouchY=t.clientY;
     }
   }
-  if (data.by === myId) $("scoreText").textContent = data.score;
-});
-
-socket.on("leaderboard", list => {
-  const box = $("leaderboardList");
-  box.replaceChildren();
-
-  (list || []).slice(0, 8).forEach((p, index) => {
-    const row = document.createElement("div");
-    row.style.color = p.id === myId ? "#55e7ff" : "#d0e8f5";
-    row.textContent = (index + 1) + ". " + p.name + " — " + p.score;
-    box.appendChild(row);
-  });
-
-  const me = (list || []).find(p => p.id === myId);
-  if (me) {
-    $("scoreText").textContent = me.score;
-    if (currentSettings && currentSettings.mode === "lives") {
-      $("livesText").textContent = me.livesLeft;
-    }
+},{passive:true});
+renderer.domElement.addEventListener("touchmove",e=>{
+  for(const t of e.changedTouches){
+    if(t.identifier!==lookTouch)continue;
+    const sens=(Number(profile.sensitivity)||6)*.001;
+    yaw-=(t.clientX-lastTouchX)*sens;
+    pitch=THREE.MathUtils.clamp(pitch+(t.clientY-lastTouchY)*sens*.7,-.15,.75);
+    lastTouchX=t.clientX;lastTouchY=t.clientY;
   }
-});
+},{passive:true});
+function touchEnd(e){for(const t of e.changedTouches)if(t.identifier===lookTouch)lookTouch=null;}
+renderer.domElement.addEventListener("touchend",touchEnd,{passive:true});
+renderer.domElement.addEventListener("touchcancel",touchEnd,{passive:true});
 
-socket.on("shotSpawn", addProjectile);
-socket.on("shotRemove", removeProjectile);
+window.addEventListener("keydown",e=>{keys.add(e.code);if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code))e.preventDefault();});
+window.addEventListener("keyup",e=>keys.delete(e.code));
+window.addEventListener("blur",()=>{keys.clear();resetStick();fireHeld=false;lookTouch=null;});
 
-socket.on("matchEnded", data => {
-  phase = "ended";
-  $("winnerText").textContent = data.winnerName
-    ? "Pemenang: " + data.winnerName
-    : "Tidak ada pemenang";
-
-  $("resultReason").textContent = data.reason || "Pertandingan selesai.";
-  const box = $("resultScores");
-  box.replaceChildren();
-
-  (data.leaderboard || []).forEach((p, i) => {
-    const row = document.createElement("div");
-    row.textContent = (i + 1) + ". " + p.name + " — " + p.score + " kill";
-    box.appendChild(row);
-  });
-
-  $("resultsOverlay").style.display = "flex";
-  $("notice").textContent = "MATCH SELESAI";
-});
-
-socket.on("roomLeft", () => {
-  inRoom = false;
-  roomCode = null;
-  myId = null;
-  phase = "lobby";
-  isHost = false;
-
-  $("hud").style.display = "none";
-  $("roomMenu").style.display = "flex";
-  $("settingsOverlay").style.display = "none";
-  $("resultsOverlay").style.display = "none";
-
-  if (myPlayer) {
-    scene.remove(myPlayer);
-    disposeObject(myPlayer);
-    myPlayer = null;
+function updateMovement(dt){
+  if(!inRoom||phase!=="playing"||!myPlayer||!myPlayer.visible)return;
+  let forward=0,strafe=0;
+  if(keys.has("KeyW")||keys.has("ArrowUp"))forward++;
+  if(keys.has("KeyS")||keys.has("ArrowDown"))forward--;
+  if(keys.has("KeyD")||keys.has("ArrowRight"))strafe++;
+  if(keys.has("KeyA")||keys.has("ArrowLeft"))strafe--;
+  forward-=moveY;strafe+=moveX;
+  const len=Math.hypot(forward,strafe);
+  if(len>1){forward/=len;strafe/=len;}
+  const speed=keys.has("ShiftLeft")?10:7;
+  const sin=Math.sin(yaw),cos=Math.cos(yaw);
+  myPlayer.position.x=THREE.MathUtils.clamp(myPlayer.position.x+(-sin*forward+cos*strafe)*speed*dt,-39,39);
+  myPlayer.position.z=THREE.MathUtils.clamp(myPlayer.position.z+(-cos*forward-sin*strafe)*speed*dt,-39,39);
+  myPlayer.rotation.y=yaw;
+  if(performance.now()-lastSend>50){
+    lastSend=performance.now();
+    socket.emit("move",{x:myPlayer.position.x,z:myPlayer.position.z,rot:yaw});
   }
-
-  clearWorld();
-  setError("");
-});
-
-function shoot() {
-  if (!inRoom || phase !== "playing" || !myPlayer || !myPlayer.visible) return;
-  const now = performance.now();
-  if (now - lastShot < 260) return;
-  lastShot = now;
-
-  socket.emit("shoot", {
-    dx: -Math.sin(yaw),
-    dz: -Math.cos(yaw)
-  });
+  if(fireHeld)shoot();
 }
-
-$("fireButton").addEventListener("pointerdown", e => {
-  e.preventDefault();
-  fireHeld = true;
-  shoot();
-});
-["pointerup", "pointercancel", "pointerleave"].forEach(type => {
-  $("fireButton").addEventListener(type, () => fireHeld = false);
-});
-
-renderer.domElement.addEventListener("contextmenu", e => e.preventDefault());
-
-renderer.domElement.addEventListener("pointerdown", e => {
-  if (!inRoom || e.pointerType === "touch") return;
-
-  if (e.button === 2 || e.button === 1) {
-    lookId = e.pointerId;
-    lastLookX = e.clientX;
-    lastLookY = e.clientY;
-    renderer.domElement.setPointerCapture(e.pointerId);
-  } else if (e.button === 0) {
-    shoot();
+function updateCamera(dt){
+  if(!myPlayer)return;
+  let desired,target;
+  if(cameraMode==="fpp"){
+    desired=new THREE.Vector3(
+      myPlayer.position.x-Math.sin(yaw)*.12,
+      myPlayer.position.y+1.55,
+      myPlayer.position.z-Math.cos(yaw)*.12
+    );
+    target=new THREE.Vector3(
+      desired.x-Math.sin(yaw)*12,
+      desired.y+Math.sin(pitch)*12,
+      desired.z-Math.cos(yaw)*12
+    );
+  }else{
+    const distance=6.2,horizontal=Math.cos(pitch)*distance;
+    desired=new THREE.Vector3(
+      myPlayer.position.x+Math.sin(yaw)*horizontal,
+      myPlayer.position.y+2.3+Math.sin(pitch)*distance,
+      myPlayer.position.z+Math.cos(yaw)*horizontal
+    );
+    target=new THREE.Vector3(myPlayer.position.x,myPlayer.position.y+1.25,myPlayer.position.z);
   }
-});
-
-renderer.domElement.addEventListener("pointermove", e => {
-  if (e.pointerId !== lookId) return;
-  const dx = e.clientX - lastLookX;
-  const dy = e.clientY - lastLookY;
-  lastLookX = e.clientX;
-  lastLookY = e.clientY;
-  yaw -= dx * 0.006;
-  pitch = THREE.MathUtils.clamp(pitch + dy * 0.004, -0.15, 0.75);
-});
-
-renderer.domElement.addEventListener("pointerup", e => {
-  if (e.pointerId === lookId) lookId = null;
-});
-renderer.domElement.addEventListener("pointercancel", () => lookId = null);
-
-$("joystick").addEventListener("pointerdown", e => {
-  e.preventDefault();
-  joystickId = e.pointerId;
-  $("joystick").setPointerCapture(e.pointerId);
-  updateJoystick(e);
-});
-$("joystick").addEventListener("pointermove", e => {
-  if (e.pointerId === joystickId) updateJoystick(e);
-});
-
-function updateJoystick(e) {
-  const rect = $("joystick").getBoundingClientRect();
-  let dx = e.clientX - (rect.left + rect.width / 2);
-  let dy = e.clientY - (rect.top + rect.height / 2);
-  const max = 36;
-  const length = Math.hypot(dx, dy);
-
-  if (length > max) {
-    dx = dx / length * max;
-    dy = dy / length * max;
-  }
-
-  moveX = dx / max;
-  moveY = dy / max;
-  $("stick").style.transform = `translate(${dx}px,${dy}px)`;
+  camera.position.lerp(desired,1-Math.exp(-7*dt));
+  camera.lookAt(target);
 }
-
-function resetJoystick() {
-  joystickId = null;
-  moveX = 0;
-  moveY = 0;
-  $("stick").style.transform = "translate(0px,0px)";
-}
-["pointerup", "pointercancel", "lostpointercapture"].forEach(type => {
-  $("joystick").addEventListener(type, resetJoystick);
-});
-
-renderer.domElement.addEventListener("touchstart", e => {
-  if (!inRoom) return;
-
-  for (const touch of e.changedTouches) {
-    if (touch.clientX < innerWidth * 0.35) continue;
-    if (touch.clientY > innerHeight - 150) continue;
-
-    touchIdentifier = touch.identifier;
-    lastLookX = touch.clientX;
-    lastLookY = touch.clientY;
-  }
-}, { passive: true });
-
-renderer.domElement.addEventListener("touchmove", e => {
-  for (const touch of e.changedTouches) {
-    if (touch.identifier !== touchIdentifier) continue;
-    const dx = touch.clientX - lastLookX;
-    const dy = touch.clientY - lastLookY;
-    lastLookX = touch.clientX;
-    lastLookY = touch.clientY;
-    yaw -= dx * 0.006;
-    pitch = THREE.MathUtils.clamp(pitch + dy * 0.004, -0.15, 0.75);
-  }
-}, { passive: true });
-
-function endTouch(e) {
-  for (const touch of e.changedTouches) {
-    if (touch.identifier === touchIdentifier) touchIdentifier = null;
+function updateRemotes(dt){
+  const a=1-Math.exp(-12*dt);
+  for(const p of remotes.values()){
+    p.mesh.position.x=THREE.MathUtils.lerp(p.mesh.position.x,p.target.x,a);
+    p.mesh.position.z=THREE.MathUtils.lerp(p.mesh.position.z,p.target.z,a);
+    let diff=p.target.rot-p.mesh.rotation.y;
+    diff=Math.atan2(Math.sin(diff),Math.cos(diff));
+    p.mesh.rotation.y+=diff*a;
   }
 }
-renderer.domElement.addEventListener("touchend", endTouch, { passive: true });
-renderer.domElement.addEventListener("touchcancel", endTouch, { passive: true });
-
-window.addEventListener("keydown", e => {
-  keys.add(e.code);
-  if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
-    e.preventDefault();
-  }
-});
-window.addEventListener("keyup", e => keys.delete(e.code));
-window.addEventListener("blur", () => {
-  keys.clear();
-  resetJoystick();
-  fireHeld = false;
-  lookId = null;
-});
-
-function updateMovement(dt) {
-  if (!inRoom || phase !== "playing" || !myPlayer || !myPlayer.visible) return;
-
-  let forward = 0;
-  let strafe = 0;
-
-  if (keys.has("KeyW") || keys.has("ArrowUp")) forward += 1;
-  if (keys.has("KeyS") || keys.has("ArrowDown")) forward -= 1;
-  if (keys.has("KeyD") || keys.has("ArrowRight")) strafe += 1;
-  if (keys.has("KeyA") || keys.has("ArrowLeft")) strafe -= 1;
-
-  forward -= moveY;
-  strafe += moveX;
-
-  const length = Math.hypot(forward, strafe);
-  if (length > 1) {
-    forward /= length;
-    strafe /= length;
-  }
-
-  const speed = keys.has("ShiftLeft") ? 10 : 7;
-  const sin = Math.sin(yaw);
-  const cos = Math.cos(yaw);
-
-  myPlayer.position.x = THREE.MathUtils.clamp(
-    myPlayer.position.x + (-sin * forward + cos * strafe) * speed * dt, -39, 39
-  );
-  myPlayer.position.z = THREE.MathUtils.clamp(
-    myPlayer.position.z + (-cos * forward - sin * strafe) * speed * dt, -39, 39
-  );
-  myPlayer.rotation.y = yaw;
-
-  const now = performance.now();
-  if (now - lastSend > 50) {
-    lastSend = now;
-    socket.emit("move", {
-      x: myPlayer.position.x,
-      z: myPlayer.position.z,
-      rot: yaw
-    });
-  }
-
-  if (fireHeld) shoot();
-}
-
-function updateCamera(dt) {
-  if (!myPlayer) return;
-
-  const distance = 6.2;
-  const horizontal = Math.cos(pitch) * distance;
-  const desired = new THREE.Vector3(
-    myPlayer.position.x + Math.sin(yaw) * horizontal,
-    myPlayer.position.y + 2.3 + Math.sin(pitch) * distance,
-    myPlayer.position.z + Math.cos(yaw) * horizontal
-  );
-
-  camera.position.lerp(desired, 1 - Math.exp(-7 * dt));
-  camera.lookAt(
-    myPlayer.position.x,
-    myPlayer.position.y + 1.25,
-    myPlayer.position.z
-  );
-}
-
-function updateRemotes(dt) {
-  const alpha = 1 - Math.exp(-12 * dt);
-
-  for (const p of remotes.values()) {
-    p.mesh.position.x = THREE.MathUtils.lerp(p.mesh.position.x, p.target.x, alpha);
-    p.mesh.position.z = THREE.MathUtils.lerp(p.mesh.position.z, p.target.z, alpha);
-
-    let difference = p.target.rot - p.mesh.rotation.y;
-    difference = Math.atan2(Math.sin(difference), Math.cos(difference));
-    p.mesh.rotation.y += difference * alpha;
+function updateShots(){
+  const now=performance.now();
+  for(const [id,s] of shots){
+    const age=(now-s.born)/1000;
+    s.mesh.position.set(s.data.x+s.data.dx*age*22,1.25,s.data.z+s.data.dz*age*22);
+    if(age>1.5)removeShot(id);
   }
 }
-
-function updateProjectiles() {
-  const now = performance.now();
-
-  for (const [id, p] of projectiles) {
-    const age = (now - p.born) / 1000;
-    p.mesh.position.x = p.data.x + p.data.dx * age * 22;
-    p.mesh.position.z = p.data.z + p.data.dz * age * 22;
-
-    if (age > 1.5) removeProjectile(id);
-  }
-}
-
-function animate(time) {
+function animate(t){
   requestAnimationFrame(animate);
-  const dt = Math.min(0.05, Math.max(0, (time - (frameTime || time)) / 1000));
-  frameTime = time;
-
-  updateMovement(dt);
-  updateRemotes(dt);
-  updateCamera(dt);
-  updateProjectiles();
-
-  renderer.render(scene, camera);
+  const dt=Math.min(.05,Math.max(0,(t-(previousFrame||t))/1000));previousFrame=t;
+  updateMovement(dt);updateRemotes(dt);updateCamera(dt);updateShots();
+  renderer.render(scene,camera);
 }
 requestAnimationFrame(animate);
-
-window.addEventListener("resize", () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+window.addEventListener("resize",()=>{
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);applyGraphics();
 });
-
-showConnection();
+applyGraphics();
+connectStatus();
 })();
 </script>
 </body>
