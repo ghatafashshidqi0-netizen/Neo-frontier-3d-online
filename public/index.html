@@ -4,53 +4,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>NEON FRONTIER</title>
+<title>NEON FRONTIER PRO</title>
 <style>
-:root{--cyan:#55e7ff;--bg:#07101c;--panel:rgba(8,18,32,.94)}
+:root{--cyan:#55e7ff;--panel:rgba(5,15,28,.95)}
 *{box-sizing:border-box}
-body{margin:0;overflow:hidden;background:var(--bg);color:#eefaff;font-family:Arial,sans-serif;touch-action:none}
-canvas{display:block}
-button,input{font:inherit}
-button{border:1px solid #55e7ff66;background:#11283c;color:#eafaff;padding:12px 16px;border-radius:10px;font-weight:700;cursor:pointer}
-button:active{transform:scale(.97)}
-input{background:#071522;color:white;border:1px solid #55e7ff66;padding:13px;border-radius:9px;width:100%;outline:none}
-#roomMenu{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at top,#12324b,#050a12 72%);padding:18px}
-.panel{width:min(430px,100%);padding:25px;background:var(--panel);border:1px solid #55e7ff55;border-radius:18px;box-shadow:0 0 45px #00c8ff16}
-.logo{font-size:clamp(28px,7vw,43px);font-weight:900;letter-spacing:3px;color:var(--cyan);text-align:center;text-shadow:0 0 24px #00d9ff55}
-.sub{text-align:center;color:#91b5c9;font-size:12px;letter-spacing:2px;margin:8px 0 22px}
-.field{margin:12px 0}
-.field label{display:block;font-size:12px;color:#9fc8db;margin-bottom:6px}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.primary{background:linear-gradient(120deg,#087eaa,#1551a1);border-color:#66eaff}
-#menuError{color:#ff839d;font-size:13px;min-height:20px;margin-top:12px;text-align:center}
-#hud{display:none;position:fixed;inset:0;pointer-events:none}
-.hudtop{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.hudcard{background:#06111cce;border:1px solid #55e7ff55;border-radius:10px;padding:9px 12px;font-size:12px;backdrop-filter:blur(8px)}
-#roomCode{font-size:16px;color:var(--cyan);font-weight:bold;letter-spacing:2px}
-#healthText{font-weight:bold}
-#healthBar{width:130px;height:6px;background:#293b4a;border-radius:8px;margin-top:6px;overflow:hidden}
+body{margin:0;overflow:hidden;background:#07101c;color:#eefaff;font-family:Arial,sans-serif;touch-action:none}
+canvas{display:block;position:fixed;inset:0;z-index:0}
+button,input,select{font:inherit}
+button{cursor:pointer;color:#effcff;background:#102a40;border:1px solid #55e7ff70;border-radius:9px;padding:11px 13px;font-weight:700}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:active{transform:scale(.98)}
+input,select{width:100%;padding:11px;background:#071522;color:white;border:1px solid #55e7ff55;border-radius:8px;outline:none}
+label{font-size:12px;color:#a6c8dc;display:block;margin:10px 0 5px}
+#roomMenu{position:fixed;z-index:10;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(ellipse at top,#15334c,#050a12 75%)}
+.panel{width:min(440px,100%);max-height:94vh;overflow:auto;padding:23px;background:var(--panel);border:1px solid #55e7ff55;border-radius:18px;box-shadow:0 0 50px #00cfff16}
+.logo{text-align:center;font-size:clamp(28px,7vw,42px);font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 22px #00d9ff55}
+.subtitle{text-align:center;font-size:11px;letter-spacing:3px;color:#8eafc4;margin:8px 0 20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.primary{background:linear-gradient(120deg,#087eaa,#164e9c)}
+#menuError{color:#ff8da6;font-size:12px;min-height:18px;margin:10px 0;text-align:center}
+#connectionStatus{font-size:11px;text-align:center;color:#8eaabd;margin-top:8px}
+#hud{display:none;position:fixed;inset:0;z-index:2;pointer-events:none}
+.topbar{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card{padding:9px 11px;background:#06111cdd;border:1px solid #55e7ff55;border-radius:10px;backdrop-filter:blur(8px);font-size:12px}
+#healthBar{height:6px;width:130px;background:#253748;margin-top:6px;border-radius:9px;overflow:hidden}
 #healthFill{height:100%;width:100%;background:#4ade80}
-#playersBox{position:absolute;right:12px;top:104px;width:160px;max-height:32vh;overflow:auto}
-#playersList{font-size:11px;line-height:1.8;color:#d0e8f5}
-#hudButtons{position:absolute;top:57px;left:12px;display:flex;gap:6px;pointer-events:auto}
-.small{font-size:11px;padding:8px 10px}
-#notice{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:#bcefff;text-shadow:0 2px 10px black;text-align:center}
+#roomCode{font-size:17px;letter-spacing:2px;color:var(--cyan);font-weight:bold}
+#hudActions{position:absolute;left:10px;top:65px;display:flex;gap:6px;pointer-events:auto}
+.small{font-size:10px;padding:8px 9px}
+#playersBox{position:absolute;right:10px;top:112px;width:150px;max-height:27vh;overflow:auto}
+#playersList{font-size:11px;line-height:1.8;overflow-wrap:anywhere}
+#leaderboardBox{position:absolute;right:10px;top:calc(112px + min(27vh,180px) + 8px);width:150px;max-height:20vh;overflow:auto}
+#leaderboardList{font-size:10px;line-height:1.7}
+#matchStatus{position:absolute;left:50%;top:75px;transform:translateX(-50%);white-space:nowrap;color:var(--cyan);background:#06111cce;padding:8px 12px;border-radius:9px;font-size:11px}
+#notice{position:absolute;top:48%;left:50%;transform:translate(-50%,-50%);text-align:center;max-width:90%;font-size:14px;color:#d9f7ff;text-shadow:0 2px 10px black}
 #controls{position:absolute;inset:0}
-#joystick{position:absolute;left:22px;bottom:24px;width:124px;height:124px;border:2px solid #55e7ff66;background:#06111c88;border-radius:50%;pointer-events:auto;touch-action:none}
-#stick{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:#55e7ff99;border:2px solid #c4f8ff;box-shadow:0 0 20px #00d9ff44}
-#lookHint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:10px;color:#d5f5ff99;text-align:center;white-space:nowrap}
-#fireButton{position:absolute;right:25px;bottom:35px;width:78px;height:78px;border-radius:50%;pointer-events:auto;background:#a51f4cbb;border:2px solid #ff80a6;font-size:12px}
-#leaveButton{pointer-events:auto}
+#joystick{position:absolute;left:20px;bottom:23px;width:124px;height:124px;border:2px solid #55e7ff70;background:#06111c88;border-radius:50%;pointer-events:auto;touch-action:none}
+#stick{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:#55e7ff99;border:2px solid #d6fbff;box-shadow:0 0 18px #00d9ff44}
+#fireButton{position:absolute;right:24px;bottom:32px;width:78px;height:78px;border-radius:50%;pointer-events:auto;background:#9c2148dd;border:2px solid #ff80a6;font-size:12px}
+#lookHint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:10px;color:#d5f5ff99;white-space:nowrap}
+#settingsOverlay{display:none;position:fixed;z-index:20;inset:0;align-items:center;justify-content:center;padding:12px;background:#020811bb;pointer-events:auto}
+#settingsPanel{width:min(390px,100%);max-height:92vh;overflow:auto;background:#081625f7;border:1px solid #55e7ff88;border-radius:15px;padding:19px;box-shadow:0 0 40px #00cfff20}
+#settingsPanel h2{margin:0;color:var(--cyan);font-size:20px}
+.settingsHint{font-size:11px;color:#91b5c9;line-height:1.5}
+#settingsMessage{font-size:12px;color:#ff8da6;min-height:17px;margin-top:8px}
+#resultsOverlay{display:none;position:fixed;inset:0;z-index:25;background:#020811dc;align-items:center;justify-content:center;padding:18px;pointer-events:auto}
+#resultsPanel{width:min(420px,100%);padding:22px;background:#091828;border:1px solid #55e7ff88;border-radius:16px}
 @media(min-width:800px){
- #joystick,#stick,#fireButton,#lookHint{display:none}
- #playersBox{top:80px}
+ #joystick,#fireButton,#lookHint{display:none}
+ #playersBox{top:90px}
+ #leaderboardBox{top:calc(90px + min(27vh,180px) + 8px)}
 }
 @media(max-width:500px){
- .panel{padding:20px}
- #playersBox{width:122px;top:103px}
- #playersList{font-size:10px}
- .hudcard{padding:8px}
+ .panel{padding:18px}
  #healthBar{width:90px}
+ #playersBox,#leaderboardBox{width:115px}
+ .card{padding:8px}
+ #matchStatus{top:78px}
 }
 </style>
 </head>
@@ -59,55 +69,131 @@ input{background:#071522;color:white;border:1px solid #55e7ff66;padding:13px;bor
 <div id="roomMenu">
   <div class="panel">
     <div class="logo">NEON FRONTIER</div>
-    <div class="sub">ONLINE COMBAT ARENA</div>
-    <div class="field">
-      <label>NAMA PEMAIN</label>
-      <input id="nameInput" maxlength="16" placeholder="Contoh: Ranger01">
-    </div>
-    <div class="field">
-      <label>KODE ROOM UNTUK BERGABUNG</label>
-      <input id="codeInput" maxlength="6" placeholder="6 karakter" autocomplete="off">
-    </div>
-    <div class="actions">
+    <div class="subtitle">PRO ONLINE ARENA</div>
+
+    <label>Nama pemain</label>
+    <input id="nameInput" maxlength="16" placeholder="Ranger01">
+
+    <label>Kode room teman</label>
+    <input id="codeInput" maxlength="6" placeholder="6 karakter" autocomplete="off" style="text-transform:uppercase">
+
+    <div class="grid2" style="margin-top:12px">
       <button id="createButton" class="primary">CREATE ROOM</button>
       <button id="joinButton">JOIN ROOM</button>
     </div>
+
     <div id="menuError"></div>
-    <div style="color:#7898aa;font-size:11px;line-height:1.6;text-align:center">
-      Buat room lalu bagikan kodenya kepada temanmu.
+    <div id="connectionStatus">Menghubungkan ke server...</div>
+
+    <div style="border-top:1px solid #55e7ff22;margin-top:16px;padding-top:12px;color:#89aabc;font-size:11px;line-height:1.7">
+      Buat room, bagikan kode ke teman, lalu atur mode pertandingan. Hanya host yang bisa mengubah pengaturan.
     </div>
   </div>
 </div>
 
 <div id="hud">
-  <div class="hudtop">
-    <div class="hudcard">
-      <div>HEALTH <span id="healthText">100</span></div>
+  <div class="topbar">
+    <div class="card">
+      <div>HP: <b id="healthText">100</b></div>
       <div id="healthBar"><div id="healthFill"></div></div>
-      <div style="margin-top:5px">KILLS: <span id="scoreText">0</span></div>
+      <div style="margin-top:5px">KILL: <b id="scoreText">0</b></div>
+      <div style="margin-top:3px">NYAWA: <b id="livesText">∞</b></div>
     </div>
-    <div class="hudcard" style="text-align:center">
-      <div style="font-size:10px;color:#91b5c9">ROOM CODE</div>
+
+    <div class="card" style="text-align:center">
+      <div style="font-size:9px;color:#8eafc4">ROOM CODE</div>
       <div id="roomCode">------</div>
-      <button id="copyButton" class="small" style="margin-top:5px">SALIN KODE</button>
+      <button id="copyButton" class="small" style="margin-top:5px">SALIN</button>
     </div>
   </div>
 
-  <div id="hudButtons">
-    <button id="leaveButton" class="small">KELUAR ROOM</button>
+  <div id="hudActions">
+    <button id="settingsButton" class="small">⚙ SETTINGS</button>
+    <button id="readyButton" class="small">READY</button>
+    <button id="leaveButton" class="small">KELUAR</button>
   </div>
 
-  <div id="playersBox" class="hudcard">
-    <b>PEMAIN DI ROOM</b>
-    <div id="playersList">Menunggu data...</div>
+  <div id="matchStatus">LOBBY</div>
+
+  <div id="playersBox" class="card">
+    <b>PEMAIN</b>
+    <div id="playersList">Menunggu...</div>
   </div>
 
-  <div id="notice">WASD untuk bergerak · Klik kanan + geser untuk memutar kamera</div>
+  <div id="leaderboardBox" class="card">
+    <b>LEADERBOARD</b>
+    <div id="leaderboardList">Belum ada skor</div>
+  </div>
+
+  <div id="notice">Menunggu pertandingan...</div>
 
   <div id="controls">
     <div id="joystick"><div id="stick"></div></div>
-    <div id="lookHint">Geser layar untuk memutar kamera</div>
+    <div id="lookHint">Geser sisi kanan layar untuk memutar kamera</div>
     <button id="fireButton">FIRE</button>
+  </div>
+</div>
+
+<div id="settingsOverlay">
+  <div id="settingsPanel">
+    <h2>ROOM SETTINGS</h2>
+    <p id="settingsPermission" class="settingsHint">Pengaturan room</p>
+
+    <label>Mode</label>
+    <select id="settingMode">
+      <option value="infinity">Infinity — respawn terus</option>
+      <option value="lives">Limited Lives — nyawa terbatas</option>
+    </select>
+
+    <label>Nyawa per pemain</label>
+    <select id="settingLives">
+      <option value="3">3 nyawa</option>
+      <option value="5">5 nyawa</option>
+      <option value="10">10 nyawa</option>
+    </select>
+
+    <label>Durasi pertandingan</label>
+    <select id="settingTime">
+      <option value="0">Tanpa batas waktu</option>
+      <option value="5">5 menit</option>
+      <option value="10">10 menit</option>
+      <option value="15">15 menit</option>
+      <option value="30">30 menit</option>
+    </select>
+
+    <label>Target kill</label>
+    <select id="settingKills">
+      <option value="0">Tanpa batas kill</option>
+      <option value="5">5 kill</option>
+      <option value="10">10 kill</option>
+      <option value="20">20 kill</option>
+      <option value="30">30 kill</option>
+    </select>
+
+    <label>Damage</label>
+    <select id="settingDamage">
+      <option value="10">10 — rendah</option>
+      <option value="25">25 — normal</option>
+      <option value="50">50 — tinggi</option>
+      <option value="100">100 — sekali hit</option>
+    </select>
+
+    <div class="grid2" style="margin-top:15px">
+      <button id="saveSettingsButton" class="primary">SIMPAN</button>
+      <button id="closeSettingsButton">TUTUP</button>
+    </div>
+    <button id="startMatchButton" class="primary" style="width:100%;margin-top:9px">MULAI PERTANDINGAN</button>
+    <div id="settingsMessage"></div>
+  </div>
+</div>
+
+<div id="resultsOverlay">
+  <div id="resultsPanel">
+    <h2 style="color:#55e7ff">MATCH SELESAI</h2>
+    <h3 id="winnerText">Hasil pertandingan</h3>
+    <p id="resultReason" style="color:#aac8da;font-size:13px"></p>
+    <div id="resultScores" style="line-height:1.9;font-size:13px;margin-bottom:16px"></div>
+    <button id="returnLobbyButton" class="primary" style="width:100%">KEMBALI KE LOBBY</button>
   </div>
 </div>
 
@@ -118,164 +204,113 @@ input{background:#071522;color:white;border:1px solid #55e7ff66;padding:13px;bor
 "use strict";
 
 const $ = id => document.getElementById(id);
-const socket = io({ autoConnect: true });
+const socket = io();
 
 let myId = null;
-let myPlayer = null;
 let roomCode = null;
 let inRoom = false;
+let isHost = false;
+let isReady = false;
+let myPlayer = null;
+let currentSettings = null;
+let phase = "lobby";
+
 let yaw = 0;
-let pitch = 0.28;
-let lastSend = 0;
-let lastShot = 0;
-let joystickId = null;
-let lookPointer = null;
-let lastLookX = 0;
-let lastLookY = 0;
+let pitch = 0.22;
 let moveX = 0;
 let moveY = 0;
+let joystickId = null;
+let lookId = null;
+let lastLookX = 0;
+let lastLookY = 0;
+let lastSend = 0;
+let lastShot = 0;
 let fireHeld = false;
-let lastFrame = 0;
+let frameTime = 0;
+let touchIdentifier = null;
 
-const remotePlayers = new Map();
-const remoteShots = new Map();
+const remotes = new Map();
+const projectiles = new Map();
 const keys = new Set();
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x07101c);
 scene.fog = new THREE.Fog(0x07101c, 35, 100);
 
-const camera = new THREE.PerspectiveCamera(
-  70, innerWidth / innerHeight, 0.1, 250
-);
-camera.rotation.order = "YXZ";
-
-const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  powerPreference: "high-performance"
-});
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.1, 200);
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
 renderer.setSize(innerWidth, innerHeight);
-renderer.shadowMap.enabled = false;
-document.body.insertBefore(renderer.domElement, $("roomMenu"));
+document.body.appendChild(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0x9bdcff, 0x172033, 2.0));
+scene.add(new THREE.HemisphereLight(0x9bdcff, 0x172033, 2));
 
-const light = new THREE.DirectionalLight(0xffffff, 1.4);
-light.position.set(12, 25, 10);
-scene.add(light);
+const sun = new THREE.DirectionalLight(0xffffff, 1.4);
+sun.position.set(12, 25, 10);
+scene.add(sun);
 
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(90, 90),
-  new THREE.MeshStandardMaterial({
-    color: 0x101d2b,
-    roughness: 0.85,
-    metalness: 0.2
-  })
+  new THREE.PlaneGeometry(86, 86),
+  new THREE.MeshStandardMaterial({ color: 0x101d2b, roughness: 0.8, metalness: 0.15 })
 );
 floor.rotation.x = -Math.PI / 2;
 floor.position.y = -0.05;
 scene.add(floor);
 
-const grid = new THREE.GridHelper(84, 42, 0x1a90ad, 0x183044);
+const grid = new THREE.GridHelper(82, 41, 0x1a90ad, 0x183044);
 grid.position.y = 0.01;
 scene.add(grid);
 
-const wallMaterial = new THREE.MeshStandardMaterial({
-  color: 0x163347,
-  emissive: 0x062638,
-  metalness: 0.45,
-  roughness: 0.5
+const wallMat = new THREE.MeshStandardMaterial({
+  color: 0x163347, emissive: 0x062638, metalness: 0.4
 });
 
-function addWall(x, z, sx, sz) {
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(sx, 2.5, sz),
-    wallMaterial
-  );
+function wall(x, z, sx, sz) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(sx, 2.5, sz), wallMat);
   mesh.position.set(x, 1.25, z);
   scene.add(mesh);
 }
-
-addWall(0, -43, 88, 2);
-addWall(0, 43, 88, 2);
-addWall(-43, 0, 2, 88);
-addWall(43, 0, 2, 88);
+wall(0, -42, 86, 2);
+wall(0, 42, 86, 2);
+wall(-42, 0, 2, 86);
+wall(42, 0, 2, 86);
 
 for (let i = 0; i < 18; i++) {
-  const a = i * 2.399;
-  const r = 8 + (i % 5) * 5;
-  const box = new THREE.Mesh(
-    new THREE.BoxGeometry(2.3, 1.5 + (i % 3), 2.3),
+  const angle = i * 2.399;
+  const radius = 8 + (i % 5) * 5;
+  const height = 1.5 + (i % 3);
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(2.3, height, 2.3),
     new THREE.MeshStandardMaterial({
       color: i % 2 ? 0x17465a : 0x252d50,
       emissive: i % 2 ? 0x073040 : 0x10152e
     })
   );
-  box.position.set(Math.cos(a) * r, box.geometry.parameters.height / 2, Math.sin(a) * r);
-  box.rotation.y = a;
-  scene.add(box);
+  mesh.position.set(Math.cos(angle) * radius, height / 2, Math.sin(angle) * radius);
+  mesh.rotation.y = angle;
+  scene.add(mesh);
 }
-
-const playerGeometry = new THREE.CapsuleGeometry(0.48, 1.0, 4, 8);
 
 function createCharacter(data) {
   const group = new THREE.Group();
+  const color = data.color || "#55e7ff";
   const material = new THREE.MeshStandardMaterial({
-    color: data.color || "#55e7ff",
-    emissive: data.color || "#55e7ff",
-    emissiveIntensity: 0.22,
-    roughness: 0.45
+    color, emissive: color, emissiveIntensity: 0.2, roughness: 0.45
   });
 
-  const body = new THREE.Mesh(playerGeometry, material);
-  body.position.y = 1.0;
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.48, 1, 4, 8), material);
+  body.position.y = 1;
   group.add(body);
 
   const visor = new THREE.Mesh(
     new THREE.BoxGeometry(0.48, 0.15, 0.12),
     new THREE.MeshBasicMaterial({ color: 0xffffff })
   );
-  visor.position.set(0, 1.45, -0.38);
+  visor.position.set(0, 1.43, -0.38);
   group.add(visor);
 
   scene.add(group);
   return group;
-}
-
-function setMyPosition(p) {
-  if (!myPlayer) return;
-  myPlayer.position.set(p.x, 0, p.z);
-  myPlayer.rotation.y = p.rot || 0;
-}
-
-function addRemote(data) {
-  if (!data || data.id === myId) return;
-
-  let obj = remotePlayers.get(data.id);
-  if (!obj) {
-    obj = {
-      mesh: createCharacter(data),
-      target: { x: data.x, z: data.z, rot: data.rot || 0 },
-      hp: data.hp ?? 100,
-      name: data.name || "Ranger"
-    };
-    remotePlayers.set(data.id, obj);
-  }
-
-  obj.target.x = data.x;
-  obj.target.z = data.z;
-  obj.target.rot = data.rot || 0;
-  obj.hp = data.hp ?? obj.hp;
-  obj.name = data.name || obj.name;
-}
-
-function removeRemote(id) {
-  const obj = remotePlayers.get(id);
-  if (!obj) return;
-  scene.remove(obj.mesh);
-  disposeObject(obj.mesh);
-  remotePlayers.delete(id);
 }
 
 function disposeObject(obj) {
@@ -288,17 +323,68 @@ function disposeObject(obj) {
   });
 }
 
-function clearGameObjects() {
-  for (const id of [...remotePlayers.keys()]) removeRemote(id);
-  for (const [id, shot] of remoteShots) {
-    scene.remove(shot.mesh);
-    shot.mesh.geometry.dispose();
-    shot.mesh.material.dispose();
-    remoteShots.delete(id);
-  }
+function clearWorld() {
+  for (const id of [...remotes.keys()]) removeRemote(id);
+  for (const id of [...projectiles.keys()]) removeProjectile(id);
 }
 
-function showError(message) {
+function addRemote(data) {
+  if (!data || data.id === myId) return;
+
+  let p = remotes.get(data.id);
+  if (!p) {
+    p = {
+      mesh: createCharacter(data),
+      target: { x: data.x, z: data.z, rot: data.rot || 0 },
+      name: data.name || "Ranger",
+      hp: data.hp ?? 100,
+      score: data.score || 0,
+      livesLeft: data.livesLeft ?? 0,
+      alive: data.alive !== false
+    };
+    remotes.set(data.id, p);
+  }
+
+  p.target.x = data.x;
+  p.target.z = data.z;
+  p.target.rot = data.rot || 0;
+  p.name = data.name || p.name;
+  p.hp = data.hp ?? p.hp;
+  p.score = data.score ?? p.score;
+  p.livesLeft = data.livesLeft ?? p.livesLeft;
+  p.alive = data.alive !== false;
+  p.mesh.visible = p.alive;
+}
+
+function removeRemote(id) {
+  const p = remotes.get(id);
+  if (!p) return;
+  scene.remove(p.mesh);
+  disposeObject(p.mesh);
+  remotes.delete(id);
+}
+
+function addProjectile(data) {
+  if (!data || projectiles.has(data.id)) return;
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.13, 8, 8),
+    new THREE.MeshBasicMaterial({ color: data.color || "#55e7ff" })
+  );
+  mesh.position.set(data.x, 1.25, data.z);
+  scene.add(mesh);
+  projectiles.set(data.id, { mesh, data, born: performance.now() });
+}
+
+function removeProjectile(id) {
+  const p = projectiles.get(id);
+  if (!p) return;
+  scene.remove(p.mesh);
+  p.mesh.geometry.dispose();
+  p.mesh.material.dispose();
+  projectiles.delete(id);
+}
+
+function setError(message) {
   $("menuError").textContent = message || "";
 }
 
@@ -306,28 +392,45 @@ function playerName() {
   return $("nameInput").value.trim().slice(0, 16) || "Ranger";
 }
 
-$("createButton").addEventListener("click", () => {
-  showError("");
-  if (!socket.connected) {
-    showError("Menghubungkan ke server...");
-    socket.connect();
-    return;
+function showConnection() {
+  $("connectionStatus").textContent = socket.connected
+    ? "● Terhubung ke server"
+    : "○ Menghubungkan ke server...";
+  $("connectionStatus").style.color = socket.connected ? "#4ade80" : "#facc15";
+  $("createButton").disabled = !socket.connected;
+  $("joinButton").disabled = !socket.connected;
+}
+
+socket.on("connect", showConnection);
+socket.on("disconnect", () => {
+  showConnection();
+  if (inRoom) {
+    inRoom = false;
+    $("hud").style.display = "none";
+    $("roomMenu").style.display = "flex";
+    $("settingsOverlay").style.display = "none";
+    $("resultsOverlay").style.display = "none";
+    clearWorld();
+    if (myPlayer) {
+      scene.remove(myPlayer);
+      disposeObject(myPlayer);
+      myPlayer = null;
+    }
+    setError("Koneksi terputus. Coba bergabung kembali.");
   }
+});
+
+$("createButton").addEventListener("click", () => {
+  setError("");
+  if (!socket.connected) return setError("Server belum terhubung.");
   socket.emit("createRoom", { name: playerName() });
 });
 
 $("joinButton").addEventListener("click", () => {
-  showError("");
+  setError("");
   const code = $("codeInput").value.trim().toUpperCase();
-  if (code.length !== 6) {
-    showError("Masukkan kode room 6 karakter.");
-    return;
-  }
-  if (!socket.connected) {
-    showError("Menghubungkan ke server...");
-    socket.connect();
-    return;
-  }
+  if (code.length !== 6) return setError("Kode room harus 6 karakter.");
+  if (!socket.connected) return setError("Server belum terhubung.");
   socket.emit("joinRoom", { code, name: playerName() });
 });
 
@@ -339,7 +442,6 @@ $("copyButton").addEventListener("click", async () => {
   if (!roomCode) return;
   try {
     await navigator.clipboard.writeText(roomCode);
-    $("copyButton").textContent = "TERSALIN!";
   } catch {
     const field = document.createElement("textarea");
     field.value = roomCode;
@@ -347,28 +449,61 @@ $("copyButton").addEventListener("click", async () => {
     field.select();
     document.execCommand("copy");
     field.remove();
-    $("copyButton").textContent = "TERSALIN!";
   }
-  setTimeout(() => $("copyButton").textContent = "SALIN KODE", 1300);
+  $("copyButton").textContent = "TERSALIN";
+  setTimeout(() => $("copyButton").textContent = "SALIN", 1200);
 });
 
-socket.on("connect", () => {
-  showError("");
+$("settingsButton").addEventListener("click", () => {
+  if (!inRoom) return;
+  $("settingsMessage").textContent = "";
+  $("settingsOverlay").style.display = "flex";
 });
 
-socket.on("disconnect", () => {
-  if (inRoom) {
-    showError("Koneksi terputus. Muat ulang halaman untuk masuk kembali.");
-    exitToMenu();
+$("closeSettingsButton").addEventListener("click", () => {
+  $("settingsOverlay").style.display = "none";
+});
+
+$("saveSettingsButton").addEventListener("click", () => {
+  if (!isHost) {
+    $("settingsMessage").textContent = "Hanya host yang bisa mengubah pengaturan.";
+    return;
   }
+
+  socket.emit("updateRoomSettings", {
+    mode: $("settingMode").value,
+    lives: Number($("settingLives").value),
+    timeLimit: Number($("settingTime").value),
+    killLimit: Number($("settingKills").value),
+    damage: Number($("settingDamage").value)
+  });
 });
 
-socket.on("roomError", message => showError(message));
+$("startMatchButton").addEventListener("click", () => {
+  socket.emit("startMatch");
+});
+
+$("readyButton").addEventListener("click", () => {
+  isReady = !isReady;
+  socket.emit("setReady", isReady);
+  $("readyButton").textContent = isReady ? "READY ✓" : "READY";
+});
+
+$("returnLobbyButton").addEventListener("click", () => {
+  $("resultsOverlay").style.display = "none";
+  $("notice").textContent = "Pertandingan selesai.";
+});
+
+socket.on("roomError", message => setError(message));
+socket.on("settingsError", message => {
+  $("settingsMessage").textContent = message;
+});
 
 socket.on("welcome", data => {
   myId = data.id;
   roomCode = data.roomCode;
   inRoom = true;
+  phase = "lobby";
 
   if (myPlayer) {
     scene.remove(myPlayer);
@@ -376,9 +511,9 @@ socket.on("welcome", data => {
   }
 
   myPlayer = createCharacter(data.player);
-  setMyPosition(data.player);
+  myPlayer.position.set(data.player.x, 0, data.player.z);
   yaw = data.player.rot || 0;
-  pitch = 0.28;
+  pitch = 0.22;
 
   $("roomMenu").style.display = "none";
   $("hud").style.display = "block";
@@ -386,125 +521,240 @@ socket.on("welcome", data => {
   $("healthText").textContent = data.player.hp;
   $("healthFill").style.width = data.player.hp + "%";
   $("scoreText").textContent = data.player.score;
-  showError("");
+  $("livesText").textContent = "∞";
+  $("notice").textContent = "Menunggu host memulai pertandingan";
+  setError("");
 });
 
 socket.on("world", data => {
-  clearGameObjects();
+  clearWorld();
   (data.players || []).forEach(addRemote);
-  (data.shots || []).forEach(addShot);
+  (data.shots || []).forEach(addProjectile);
 });
 
 socket.on("playerJoined", addRemote);
-socket.on("playerMoved", addRemote);
-socket.on("playerRespawn", addRemote);
+socket.on("playerMoved", data => {
+  if (data.id === myId) {
+    if (myPlayer && !data.alive) myPlayer.visible = false;
+    return;
+  }
+  addRemote(data);
+});
+
 socket.on("playerLeft", removeRemote);
+socket.on("playerRespawn", data => {
+  if (data.id === myId) {
+    if (myPlayer) {
+      myPlayer.visible = true;
+      myPlayer.position.set(data.x, 0, data.z);
+    }
+    $("healthText").textContent = data.hp;
+    $("healthFill").style.width = data.hp + "%";
+    $("livesText").textContent = currentSettings && currentSettings.mode === "lives"
+      ? data.livesLeft : "∞";
+    $("notice").textContent = "RESPAWN!";
+    setTimeout(() => {
+      if (inRoom && phase === "playing") $("notice").textContent = "";
+    }, 900);
+  } else {
+    addRemote(data);
+  }
+});
 
 socket.on("roomInfo", info => {
-  $("roomCode").textContent = info.code;
+  isHost = info.hostId === myId;
+  phase = info.phase;
+  currentSettings = info.settings || currentSettings;
+
+  $("settingsPermission").textContent = isHost
+    ? "Kamu adalah host. Pengaturan hanya dapat diubah saat lobby."
+    : "Kamu bukan host. Hanya host yang dapat mengubah pengaturan.";
+
+  const canEdit = isHost && phase === "lobby";
+  ["settingMode", "settingLives", "settingTime", "settingKills", "settingDamage"]
+    .forEach(id => $(id).disabled = !canEdit);
+
+  $("saveSettingsButton").disabled = !canEdit;
+  $("startMatchButton").disabled = !isHost || phase !== "lobby";
+  $("startMatchButton").textContent = phase === "lobby" ? "MULAI PERTANDINGAN" : "PERTANDINGAN BERJALAN";
+
   const list = $("playersList");
-  list.innerHTML = "";
+  list.replaceChildren();
 
   (info.players || []).forEach(p => {
     const row = document.createElement("div");
     row.style.color = p.id === info.hostId ? "#55e7ff" : "#d0e8f5";
-    row.textContent = (p.id === info.hostId ? "★ " : "• ") + p.name;
+    const ready = p.ready ? " ✓" : "";
+    row.textContent = (p.id === info.hostId ? "★ " : "• ") + p.name + ready;
     list.appendChild(row);
   });
 
-  if (!info.players || info.players.length === 0) {
-    list.textContent = "Belum ada pemain";
+  if (!info.players || !info.players.length) list.textContent = "Belum ada pemain";
+
+  if (currentSettings) applySettingsToForm(currentSettings);
+
+  if (phase === "lobby") {
+    $("notice").textContent = isHost
+      ? "Kamu host — atur room lalu mulai!"
+      : "Menunggu host memulai pertandingan";
   }
+});
+
+function applySettingsToForm(s) {
+  $("settingMode").value = s.mode;
+  $("settingLives").value = String(s.lives);
+  $("settingTime").value = String(s.timeLimit);
+  $("settingKills").value = String(s.killLimit);
+  $("settingDamage").value = String(s.damage);
+  $("livesText").textContent = s.mode === "infinity" ? "∞" : String(s.lives);
+}
+
+socket.on("roomSettingsUpdated", settings => {
+  currentSettings = settings;
+  applySettingsToForm(settings);
+  $("settingsMessage").textContent = "Pengaturan tersimpan.";
+});
+
+socket.on("matchStarted", data => {
+  phase = "playing";
+  currentSettings = data.settings;
+  applySettingsToForm(data.settings);
+  $("settingsOverlay").style.display = "none";
+  $("resultsOverlay").style.display = "none";
+  $("notice").textContent = "FIGHT!";
+  setTimeout(() => {
+    if (phase === "playing") $("notice").textContent = "";
+  }, 1200);
+
+  const me = (data.players || []).find(p => p.id === myId);
+  if (me && myPlayer) {
+    myPlayer.position.set(me.x, 0, me.z);
+    myPlayer.visible = true;
+    yaw = me.rot || 0;
+    $("healthText").textContent = me.hp;
+    $("healthFill").style.width = me.hp + "%";
+    $("scoreText").textContent = me.score;
+  }
+  (data.players || []).forEach(addRemote);
+});
+
+socket.on("matchStatus", data => {
+  phase = data.status;
+  const s = data.settings || currentSettings;
+  const seconds = data.secondsLeft || 0;
+  const timer = seconds > 0
+    ? " · " + Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0")
+    : "";
+
+  $("matchStatus").textContent =
+    (data.status === "playing" ? "MATCH BERLANGSUNG" :
+    data.status === "ended" ? "MATCH SELESAI" : "LOBBY") + timer;
+
+  if (s) currentSettings = s;
 });
 
 socket.on("playerHit", data => {
   if (data.target === myId) {
     $("healthText").textContent = data.hp;
     $("healthFill").style.width = data.hp + "%";
+  } else {
+    const p = remotes.get(data.target);
+    if (p) p.hp = data.hp;
   }
-  const obj = remotePlayers.get(data.target);
-  if (obj) obj.hp = data.hp;
 });
 
 socket.on("playerDown", data => {
   if (data.id === myId) {
-    $("notice").textContent = "Kamu tereliminasi! Respawn sebentar lagi...";
-    setTimeout(() => {
-      $("notice").textContent = "WASD untuk bergerak · Geser untuk melihat";
-    }, 2000);
+    if (myPlayer) myPlayer.visible = false;
+    $("notice").textContent = "TERELIMINASI";
+    $("livesText").textContent =
+      currentSettings && currentSettings.mode === "lives"
+        ? String(data.livesLeft) : "∞";
+  } else {
+    const p = remotes.get(data.id);
+    if (p) {
+      p.mesh.visible = false;
+      p.alive = false;
+    }
   }
-  if (data.id !== myId) {
-    const obj = remotePlayers.get(data.id);
-    if (obj) obj.mesh.visible = false;
-  }
-  if (data.by === myId) {
-    $("scoreText").textContent = data.score;
-  }
+  if (data.by === myId) $("scoreText").textContent = data.score;
 });
 
 socket.on("leaderboard", list => {
-  if (!list) return;
-  if (myId) {
-    const me = list.find(p => p.id === myId);
-    if (me) $("scoreText").textContent = me.score;
+  const box = $("leaderboardList");
+  box.replaceChildren();
+
+  (list || []).slice(0, 8).forEach((p, index) => {
+    const row = document.createElement("div");
+    row.style.color = p.id === myId ? "#55e7ff" : "#d0e8f5";
+    row.textContent = (index + 1) + ". " + p.name + " — " + p.score;
+    box.appendChild(row);
+  });
+
+  const me = (list || []).find(p => p.id === myId);
+  if (me) {
+    $("scoreText").textContent = me.score;
+    if (currentSettings && currentSettings.mode === "lives") {
+      $("livesText").textContent = me.livesLeft;
+    }
   }
 });
 
-socket.on("shotSpawn", addShot);
-socket.on("shotRemove", removeShot);
+socket.on("shotSpawn", addProjectile);
+socket.on("shotRemove", removeProjectile);
 
-socket.on("roomLeft", () => exitToMenu());
+socket.on("matchEnded", data => {
+  phase = "ended";
+  $("winnerText").textContent = data.winnerName
+    ? "Pemenang: " + data.winnerName
+    : "Tidak ada pemenang";
 
-function exitToMenu() {
+  $("resultReason").textContent = data.reason || "Pertandingan selesai.";
+  const box = $("resultScores");
+  box.replaceChildren();
+
+  (data.leaderboard || []).forEach((p, i) => {
+    const row = document.createElement("div");
+    row.textContent = (i + 1) + ". " + p.name + " — " + p.score + " kill";
+    box.appendChild(row);
+  });
+
+  $("resultsOverlay").style.display = "flex";
+  $("notice").textContent = "MATCH SELESAI";
+});
+
+socket.on("roomLeft", () => {
   inRoom = false;
   roomCode = null;
   myId = null;
+  phase = "lobby";
+  isHost = false;
+
+  $("hud").style.display = "none";
+  $("roomMenu").style.display = "flex";
+  $("settingsOverlay").style.display = "none";
+  $("resultsOverlay").style.display = "none";
+
   if (myPlayer) {
     scene.remove(myPlayer);
     disposeObject(myPlayer);
     myPlayer = null;
   }
-  clearGameObjects();
-  $("hud").style.display = "none";
-  $("roomMenu").style.display = "flex";
-  $("roomCode").textContent = "------";
-  $("playersList").textContent = "Menunggu data...";
-  showError("");
-}
 
-function addShot(data) {
-  if (!data || remoteShots.has(data.id)) return;
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(0.13, 8, 8),
-    new THREE.MeshBasicMaterial({ color: data.color || "#55e7ff" })
-  );
-  mesh.position.set(data.x, data.y || 1.35, data.z);
-  scene.add(mesh);
-  remoteShots.set(data.id, {
-    mesh,
-    data: { ...data },
-    born: performance.now()
-  });
-}
-
-function removeShot(id) {
-  const shot = remoteShots.get(id);
-  if (!shot) return;
-  scene.remove(shot.mesh);
-  shot.mesh.geometry.dispose();
-  shot.mesh.material.dispose();
-  remoteShots.delete(id);
-}
+  clearWorld();
+  setError("");
+});
 
 function shoot() {
-  if (!inRoom || !myPlayer || !myPlayer.visible) return;
+  if (!inRoom || phase !== "playing" || !myPlayer || !myPlayer.visible) return;
   const now = performance.now();
-  if (now - lastShot < 270) return;
+  if (now - lastShot < 260) return;
   lastShot = now;
 
-  const dx = -Math.sin(yaw);
-  const dz = -Math.cos(yaw);
-  socket.emit("shoot", { dx, dz });
+  socket.emit("shoot", {
+    dx: -Math.sin(yaw),
+    dz: -Math.cos(yaw)
+  });
 }
 
 $("fireButton").addEventListener("pointerdown", e => {
@@ -512,16 +762,17 @@ $("fireButton").addEventListener("pointerdown", e => {
   fireHeld = true;
   shoot();
 });
-["pointerup", "pointercancel", "pointerleave"].forEach(eventName => {
-  $("fireButton").addEventListener(eventName, () => fireHeld = false);
+["pointerup", "pointercancel", "pointerleave"].forEach(type => {
+  $("fireButton").addEventListener(type, () => fireHeld = false);
 });
 
 renderer.domElement.addEventListener("contextmenu", e => e.preventDefault());
 
 renderer.domElement.addEventListener("pointerdown", e => {
   if (!inRoom || e.pointerType === "touch") return;
+
   if (e.button === 2 || e.button === 1) {
-    lookPointer = e.pointerId;
+    lookId = e.pointerId;
     lastLookX = e.clientX;
     lastLookY = e.clientY;
     renderer.domElement.setPointerCapture(e.pointerId);
@@ -531,20 +782,19 @@ renderer.domElement.addEventListener("pointerdown", e => {
 });
 
 renderer.domElement.addEventListener("pointermove", e => {
-  if (e.pointerId !== lookPointer) return;
+  if (e.pointerId !== lookId) return;
   const dx = e.clientX - lastLookX;
   const dy = e.clientY - lastLookY;
   lastLookX = e.clientX;
   lastLookY = e.clientY;
   yaw -= dx * 0.006;
-  pitch = Math.max(-0.15, Math.min(0.75, pitch + dy * 0.004));
+  pitch = THREE.MathUtils.clamp(pitch + dy * 0.004, -0.15, 0.75);
 });
 
 renderer.domElement.addEventListener("pointerup", e => {
-  if (e.pointerId === lookPointer) lookPointer = null;
+  if (e.pointerId === lookId) lookId = null;
 });
-
-renderer.domElement.addEventListener("pointercancel", () => lookPointer = null);
+renderer.domElement.addEventListener("pointercancel", () => lookId = null);
 
 $("joystick").addEventListener("pointerdown", e => {
   e.preventDefault();
@@ -552,10 +802,26 @@ $("joystick").addEventListener("pointerdown", e => {
   $("joystick").setPointerCapture(e.pointerId);
   updateJoystick(e);
 });
-
 $("joystick").addEventListener("pointermove", e => {
   if (e.pointerId === joystickId) updateJoystick(e);
 });
+
+function updateJoystick(e) {
+  const rect = $("joystick").getBoundingClientRect();
+  let dx = e.clientX - (rect.left + rect.width / 2);
+  let dy = e.clientY - (rect.top + rect.height / 2);
+  const max = 36;
+  const length = Math.hypot(dx, dy);
+
+  if (length > max) {
+    dx = dx / length * max;
+    dy = dy / length * max;
+  }
+
+  moveX = dx / max;
+  moveY = dy / max;
+  $("stick").style.transform = `translate(${dx}px,${dy}px)`;
+}
 
 function resetJoystick() {
   joystickId = null;
@@ -563,35 +829,18 @@ function resetJoystick() {
   moveY = 0;
   $("stick").style.transform = "translate(0px,0px)";
 }
-
-["pointerup", "pointercancel", "lostpointercapture"].forEach(name => {
-  $("joystick").addEventListener(name, resetJoystick);
+["pointerup", "pointercancel", "lostpointercapture"].forEach(type => {
+  $("joystick").addEventListener(type, resetJoystick);
 });
-
-function updateJoystick(e) {
-  const rect = $("joystick").getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  let dx = e.clientX - centerX;
-  let dy = e.clientY - centerY;
-  const max = 36;
-  const len = Math.hypot(dx, dy);
-  if (len > max) {
-    dx = dx / len * max;
-    dy = dy / len * max;
-  }
-  moveX = dx / max;
-  moveY = dy / max;
-  $("stick").style.transform = `translate(${dx}px,${dy}px)`;
-}
-
-let touchLookId = null;
 
 renderer.domElement.addEventListener("touchstart", e => {
   if (!inRoom) return;
+
   for (const touch of e.changedTouches) {
-    if (touch.clientX < innerWidth * 0.35 || touch.clientY > innerHeight - 160) continue;
-    touchLookId = touch.identifier;
+    if (touch.clientX < innerWidth * 0.35) continue;
+    if (touch.clientY > innerHeight - 150) continue;
+
+    touchIdentifier = touch.identifier;
     lastLookX = touch.clientX;
     lastLookY = touch.clientY;
   }
@@ -599,23 +848,23 @@ renderer.domElement.addEventListener("touchstart", e => {
 
 renderer.domElement.addEventListener("touchmove", e => {
   for (const touch of e.changedTouches) {
-    if (touch.identifier !== touchLookId) continue;
+    if (touch.identifier !== touchIdentifier) continue;
     const dx = touch.clientX - lastLookX;
     const dy = touch.clientY - lastLookY;
     lastLookX = touch.clientX;
     lastLookY = touch.clientY;
     yaw -= dx * 0.006;
-    pitch = Math.max(-0.15, Math.min(0.75, pitch + dy * 0.004));
+    pitch = THREE.MathUtils.clamp(pitch + dy * 0.004, -0.15, 0.75);
   }
 }, { passive: true });
 
-function endTouchLook(e) {
+function endTouch(e) {
   for (const touch of e.changedTouches) {
-    if (touch.identifier === touchLookId) touchLookId = null;
+    if (touch.identifier === touchIdentifier) touchIdentifier = null;
   }
 }
-renderer.domElement.addEventListener("touchend", endTouchLook, { passive: true });
-renderer.domElement.addEventListener("touchcancel", endTouchLook, { passive: true });
+renderer.domElement.addEventListener("touchend", endTouch, { passive: true });
+renderer.domElement.addEventListener("touchcancel", endTouch, { passive: true });
 
 window.addEventListener("keydown", e => {
   keys.add(e.code);
@@ -628,10 +877,11 @@ window.addEventListener("blur", () => {
   keys.clear();
   resetJoystick();
   fireHeld = false;
+  lookId = null;
 });
 
 function updateMovement(dt) {
-  if (!inRoom || !myPlayer || !myPlayer.visible) return;
+  if (!inRoom || phase !== "playing" || !myPlayer || !myPlayer.visible) return;
 
   let forward = 0;
   let strafe = 0;
@@ -641,24 +891,25 @@ function updateMovement(dt) {
   if (keys.has("KeyD") || keys.has("ArrowRight")) strafe += 1;
   if (keys.has("KeyA") || keys.has("ArrowLeft")) strafe -= 1;
 
-  forward += -moveY;
+  forward -= moveY;
   strafe += moveX;
 
-  const mag = Math.hypot(forward, strafe);
-  if (mag > 1) {
-    forward /= mag;
-    strafe /= mag;
+  const length = Math.hypot(forward, strafe);
+  if (length > 1) {
+    forward /= length;
+    strafe /= length;
   }
 
-  const speed = keys.has("ShiftLeft") ? 10.5 : 7.0;
+  const speed = keys.has("ShiftLeft") ? 10 : 7;
   const sin = Math.sin(yaw);
   const cos = Math.cos(yaw);
 
-  const vx = (-sin * forward + cos * strafe) * speed * dt;
-  const vz = (-cos * forward - sin * strafe) * speed * dt;
-
-  myPlayer.position.x = THREE.MathUtils.clamp(myPlayer.position.x + vx, -40, 40);
-  myPlayer.position.z = THREE.MathUtils.clamp(myPlayer.position.z + vz, -40, 40);
+  myPlayer.position.x = THREE.MathUtils.clamp(
+    myPlayer.position.x + (-sin * forward + cos * strafe) * speed * dt, -39, 39
+  );
+  myPlayer.position.z = THREE.MathUtils.clamp(
+    myPlayer.position.z + (-cos * forward - sin * strafe) * speed * dt, -39, 39
+  );
   myPlayer.rotation.y = yaw;
 
   const now = performance.now();
@@ -667,8 +918,7 @@ function updateMovement(dt) {
     socket.emit("move", {
       x: myPlayer.position.x,
       z: myPlayer.position.z,
-      rot: yaw,
-      moving: mag > 0.08
+      rot: yaw
     });
   }
 
@@ -686,114 +936,61 @@ function updateCamera(dt) {
     myPlayer.position.z + Math.cos(yaw) * horizontal
   );
 
-  // Delta-time damping keeps camera movement consistent across frame rates.
-  const alpha = 1 - Math.exp(-7 * dt);
-  camera.position.lerp(desired, alpha);
-
-  const target = new THREE.Vector3(
+  camera.position.lerp(desired, 1 - Math.exp(-7 * dt));
+  camera.lookAt(
     myPlayer.position.x,
     myPlayer.position.y + 1.25,
     myPlayer.position.z
   );
-  camera.lookAt(target);
 }
 
 function updateRemotes(dt) {
   const alpha = 1 - Math.exp(-12 * dt);
-  for (const obj of remotePlayers.values()) {
-    obj.mesh.position.x = THREE.MathUtils.lerp(
-      obj.mesh.position.x, obj.target.x, alpha
-    );
-    obj.mesh.position.z = THREE.MathUtils.lerp(
-      obj.mesh.position.z, obj.target.z, alpha
-    );
 
-    let delta = obj.target.rot - obj.mesh.rotation.y;
-    delta = Math.atan2(Math.sin(delta), Math.cos(delta));
-    obj.mesh.rotation.y += delta * alpha;
+  for (const p of remotes.values()) {
+    p.mesh.position.x = THREE.MathUtils.lerp(p.mesh.position.x, p.target.x, alpha);
+    p.mesh.position.z = THREE.MathUtils.lerp(p.mesh.position.z, p.target.z, alpha);
+
+    let difference = p.target.rot - p.mesh.rotation.y;
+    difference = Math.atan2(Math.sin(difference), Math.cos(difference));
+    p.mesh.rotation.y += difference * alpha;
   }
 }
 
-function updateShots() {
+function updateProjectiles() {
   const now = performance.now();
 
-  for (const [id, shot] of remoteShots) {
-    const d = shot.data;
-    const age = (now - shot.born) / 1000;
-    shot.mesh.position.x = d.x + d.dx * age * 22;
-    shot.mesh.position.z = d.z + d.dz * age * 22;
+  for (const [id, p] of projectiles) {
+    const age = (now - p.born) / 1000;
+    p.mesh.position.x = p.data.x + p.data.dx * age * 22;
+    p.mesh.position.z = p.data.z + p.data.dz * age * 22;
 
-    if (age > 1.7) {
-      removeShot(id);
-      continue;
-    }
-
-    if (!inRoom || !myPlayer || d.owner === myId) continue;
-
-    const distance = Math.hypot(
-      shot.mesh.position.x - myPlayer.position.x,
-      shot.mesh.position.z - myPlayer.position.z
-    );
-
-    // The server still validates the room, shot ownership and target state.
-    if (distance < 0.9) {
-      // Client-side prediction is not used to damage the local player here.
-    }
-  }
-}
-
-function checkHits() {
-  const now = performance.now();
-  if (!inRoom || !myPlayer || !myPlayer.visible || now - lastShot < 0) return;
-
-  for (const [shotId, shot] of remoteShots) {
-    if (shot.data.owner !== myId) continue;
-    const age = (now - shot.born) / 1000;
-    const sx = shot.data.x + shot.data.dx * age * 22;
-    const sz = shot.data.z + shot.data.dz * age * 22;
-
-    for (const [targetId, obj] of remotePlayers) {
-      if (!obj.mesh.visible) continue;
-      const distance = Math.hypot(sx - obj.mesh.position.x, sz - obj.mesh.position.z);
-
-      if (distance < 1.05) {
-        socket.emit("hit", {
-          target: targetId,
-          shotId,
-          x: sx,
-          z: sz
-        });
-        removeShot(shotId);
-        break;
-      }
-    }
+    if (age > 1.5) removeProjectile(id);
   }
 }
 
 function animate(time) {
   requestAnimationFrame(animate);
-
-  const dt = Math.min(0.05, Math.max(0, (time - (lastFrame || time)) / 1000));
-  lastFrame = time;
+  const dt = Math.min(0.05, Math.max(0, (time - (frameTime || time)) / 1000));
+  frameTime = time;
 
   updateMovement(dt);
   updateRemotes(dt);
   updateCamera(dt);
-  updateShots();
-  checkHits();
+  updateProjectiles();
 
   renderer.render(scene, camera);
 }
-
 requestAnimationFrame(animate);
 
 window.addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
 });
 
+showConnection();
 })();
 </script>
 </body>
