@@ -1,4 +1,6 @@
 
+"use strict";
+
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -13,24 +15,20 @@ const io = new Server(server, {
 });
 
 const PORT = process.env.PORT || 3000;
-const ROOM_CAPACITY = Math.max(
-  2,
-  Math.min(16, Number(process.env.ROOM_CAPACITY) || 8)
-);
-const ARENA = 42;
-const COLORS = [
-  "#55e7ff", "#ff4f9a", "#a78bfa", "#facc15",
-  "#4ade80", "#fb923c", "#60a5fa", "#f472b6"
-];
+const CAPACITY = Math.max(2, Math.min(16, Number(process.env.ROOM_CAPACITY) || 8));
+const ARENA = 40;
 
 app.use(express.static(path.join(__dirname, "public")));
-app.get("/health", (_req, res) =>
-  res.json({ ok: true, game: "NEON FRONTIER" })
-);
+app.get("/health", (_req, res) => res.json({ ok: true, game: "NEON FRONTIER PRO" }));
 
 const rooms = new Map();
 const players = new Map();
 const shots = new Map();
+
+const COLORS = [
+  "#55e7ff", "#ff4f9a", "#a78bfa", "#facc15",
+  "#4ade80", "#fb923c", "#60a5fa", "#f472b6"
+];
 
 function cleanName(value) {
   return String(value || "Ranger")
@@ -40,57 +38,73 @@ function cleanName(value) {
 }
 
 function cleanCode(value) {
-  return String(value || "")
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .slice(0, 6);
+  return String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
 }
 
 function makeCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code;
   do {
-    code = Array.from(
-      { length: 6 },
-      () => chars[Math.floor(Math.random() * chars.length)]
+    code = Array.from({ length: 6 }, () =>
+      chars[Math.floor(Math.random() * chars.length)]
     ).join("");
   } while (rooms.has(code));
   return code;
 }
 
-function spawnPoint() {
-  const angle = Math.random() * Math.PI * 2;
-  const radius = 5 + Math.random() * 12;
+function defaultSettings() {
   return {
-    x: Math.cos(angle) * radius,
-    z: Math.sin(angle) * radius
+    mode: "infinity",
+    lives: 5,
+    timeLimit: 0,
+    killLimit: 0,
+    damage: 25
   };
 }
 
-function publicPlayer(p) {
+function spawnPoint() {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 4 + Math.random() * 14;
+  return {
+    x: Math.round(Math.cos(angle) * radius * 100) / 100,
+    z: Math.round(Math.sin(angle) * radius * 100) / 100
+  };
+}
+
+function safePlayer(p) {
   return {
     id: p.id,
     name: p.name,
     x: p.x,
-    y: 0,
     z: p.z,
     rot: p.rot,
     color: p.color,
     hp: p.hp,
     score: p.score,
     deaths: p.deaths,
-    moving: p.moving,
-    alive: p.alive
+    livesLeft: p.livesLeft,
+    alive: p.alive,
+    ready: p.ready
   };
 }
 
-function roomPlayers(code) {
+function getRoomPlayers(code) {
   const room = rooms.get(code);
   if (!room) return [];
   return [...room.players]
     .map(id => players.get(id))
     .filter(Boolean)
-    .map(publicPlayer);
+    .map(safePlayer);
+}
+
+function getPublicSettings(room) {
+  return {
+    ...room.settings,
+    capacity: CAPACITY,
+    hostId: room.hostId,
+    phase: room.phase,
+    secondsLeft: room.secondsLeft
+  };
 }
 
 function sendRoomInfo(code) {
@@ -100,31 +114,68 @@ function sendRoomInfo(code) {
   io.to(code).emit("roomInfo", {
     code,
     hostId: room.hostId,
-    capacity: ROOM_CAPACITY,
-    players: roomPlayers(code)
+    capacity: CAPACITY,
+    phase: room.phase,
+    settings: getPublicSettings(room),
+    players: getRoomPlayers(code)
+  });
+
+  io.to(code).emit("roomSettingsUpdated", getPublicSettings(room));
+  sendLeaderboard(code);
+}
+
+function sendLeaderboard(code) {
+  const room = rooms.get(code);
+  if (!room) return;
+
+  const list = getRoomPlayers(code)
+    .sort((a, b) => b.score - a.score)
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      score: p.score,
+      deaths: p.deaths,
+      livesLeft: p.livesLeft
+    }));
+
+  io.to(code).emit("leaderboard", list);
+}
+
+function emitMatchStatus(room) {
+  io.to(room.code).emit("matchStatus", {
+    status: room.phase,
+    secondsLeft: room.secondsLeft,
+    settings: getPublicSettings(room)
   });
 }
 
-function removePlayerFromRoom(socket, { announce = true } = {}) {
+function fail(socket, message) {
+  socket.emit("roomError", message);
+}
+
+function settingsFail(socket, message) {
+  socket.emit("settingsError", message);
+}
+
+function removeOwnedShots(id, code) {
+  for (const [shotId, shot] of shots) {
+    if (shot.owner === id && shot.room === code) {
+      shots.delete(shotId);
+      io.to(code).emit("shotRemove", shotId);
+    }
+  }
+}
+
+function removeFromRoom(socket) {
   const p = players.get(socket.id);
   if (!p) return;
 
   const code = p.room;
-  if (!code) {
-    players.delete(socket.id);
-    return;
-  }
-
   const room = rooms.get(code);
+
   socket.leave(code);
   players.delete(socket.id);
-
-  for (const [id, shot] of shots) {
-    if (shot.owner === socket.id) {
-      shots.delete(id);
-      io.to(code).emit("shotRemove", id);
-    }
-  }
+  removeOwnedShots(socket.id, code);
 
   if (!room) return;
 
@@ -139,83 +190,145 @@ function removePlayerFromRoom(socket, { announce = true } = {}) {
     room.hostId = room.players.values().next().value;
   }
 
-  if (announce) {
-    io.to(code).emit("playerLeft", socket.id);
-    sendRoomInfo(code);
-    sendLeaderboard(code);
+  io.to(code).emit("playerLeft", socket.id);
+
+  if (room.phase === "playing" && room.players.size < 2) {
+    endMatch(room, null, "Pemain tidak cukup untuk melanjutkan.");
   }
+
+  sendRoomInfo(code);
 }
 
-function sendLeaderboard(code) {
-  const room = rooms.get(code);
-  if (!room) return;
-
-  const list = roomPlayers(code)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 8)
-    .map(p => ({
-      id: p.id,
-      name: p.name,
-      score: p.score,
-      deaths: p.deaths
-    }));
-
-  io.to(code).emit("leaderboard", list);
-}
-
-function fail(socket, message) {
-  socket.emit("roomError", message);
-}
-
-function enterRoom(socket, code, name) {
-  const room = rooms.get(code);
+function enterRoom(socket, room, name) {
   if (!room) return fail(socket, "Room tidak ditemukan.");
-  if (room.players.size >= ROOM_CAPACITY) {
-    return fail(socket, "Room sudah penuh.");
-  }
-  if (players.has(socket.id)) {
-    return fail(socket, "Kamu sudah berada di room.");
-  }
+  if (room.players.size >= CAPACITY) return fail(socket, "Room sudah penuh.");
+  if (players.has(socket.id)) return fail(socket, "Kamu sudah berada di room.");
+  if (room.phase !== "lobby") return fail(socket, "Pertandingan sudah dimulai.");
 
-  const spawn = spawnPoint();
+  const pos = spawnPoint();
   const p = {
     id: socket.id,
+    room: room.code,
     name: cleanName(name),
-    room: code,
-    x: spawn.x,
-    y: 0,
-    z: spawn.z,
+    x: pos.x,
+    z: pos.z,
     rot: 0,
     color: COLORS[room.players.size % COLORS.length],
     hp: 100,
     score: 0,
     deaths: 0,
-    moving: false,
+    livesLeft: room.settings.lives,
     alive: true,
+    ready: false,
     lastMove: 0,
     lastShot: 0,
-    lastHit: 0
+    respawnAt: 0
   };
 
   players.set(socket.id, p);
   room.players.add(socket.id);
-  socket.join(code);
+  socket.join(room.code);
 
   socket.emit("welcome", {
     id: socket.id,
-    player: publicPlayer(p),
-    arena: ARENA,
-    roomCode: code
+    roomCode: room.code,
+    player: safePlayer(p),
+    arena: ARENA
   });
 
   socket.emit("world", {
-    players: roomPlayers(code).filter(q => q.id !== socket.id),
-    shots: [...shots.values()].filter(s => s.room === code)
+    players: getRoomPlayers(room.code).filter(q => q.id !== socket.id),
+    shots: [...shots.values()].filter(s => s.room === room.code)
   });
 
-  socket.to(code).emit("playerJoined", publicPlayer(p));
-  sendRoomInfo(code);
-  sendLeaderboard(code);
+  socket.to(room.code).emit("playerJoined", safePlayer(p));
+  sendRoomInfo(room.code);
+}
+
+function startMatch(room) {
+  if (!room || room.phase !== "lobby") return false;
+
+  const active = [...room.players]
+    .map(id => players.get(id))
+    .filter(Boolean);
+
+  if (active.length < 1) return false;
+
+  room.phase = "playing";
+  room.startedAt = Date.now();
+  room.endsAt = room.settings.timeLimit > 0
+    ? Date.now() + room.settings.timeLimit * 60000
+    : 0;
+  room.secondsLeft = room.settings.timeLimit * 60;
+
+  for (const p of active) {
+    p.score = 0;
+    p.deaths = 0;
+    p.hp = 100;
+    p.livesLeft = room.settings.lives;
+    p.alive = true;
+    p.ready = false;
+    p.respawnAt = 0;
+
+    const pos = spawnPoint();
+    p.x = pos.x;
+    p.z = pos.z;
+  }
+
+  io.to(room.code).emit("matchStarted", {
+    settings: getPublicSettings(room),
+    players: getRoomPlayers(room.code)
+  });
+
+  sendRoomInfo(room.code);
+  emitMatchStatus(room);
+  return true;
+}
+
+function endMatch(room, winnerId, reason) {
+  if (!room || room.phase !== "playing") return;
+
+  room.phase = "ended";
+  room.secondsLeft = 0;
+
+  const winner = winnerId ? players.get(winnerId) : null;
+  io.to(room.code).emit("matchEnded", {
+    winnerId: winnerId || null,
+    winnerName: winner ? winner.name : "Tidak ada pemenang",
+    reason: reason || "Pertandingan selesai",
+    leaderboard: getRoomPlayers(room.code)
+      .sort((a, b) => b.score - a.score)
+  });
+
+  emitMatchStatus(room);
+  sendRoomInfo(room.code);
+}
+
+function checkWin(room) {
+  if (!room || room.phase !== "playing") return;
+
+  if (room.settings.killLimit > 0) {
+    const winner = [...room.players]
+      .map(id => players.get(id))
+      .filter(Boolean)
+      .find(p => p.score >= room.settings.killLimit);
+
+    if (winner) endMatch(room, winner.id, "Target kill tercapai.");
+  }
+
+  if (room.settings.mode === "lives") {
+    const alivePlayers = [...room.players]
+      .map(id => players.get(id))
+      .filter(p => p && p.livesLeft > 0);
+
+    const allPlayers = [...room.players]
+      .map(id => players.get(id))
+      .filter(Boolean);
+
+    if (allPlayers.length >= 2 && alivePlayers.length <= 1) {
+      endMatch(room, alivePlayers[0]?.id || null, "Mode Limited Lives selesai.");
+    }
+  }
 }
 
 io.on("connection", socket => {
@@ -225,13 +338,19 @@ io.on("connection", socket => {
     }
 
     const code = makeCode();
-    rooms.set(code, {
+    const room = {
       code,
       hostId: socket.id,
-      players: new Set()
-    });
+      players: new Set(),
+      settings: defaultSettings(),
+      phase: "lobby",
+      startedAt: 0,
+      endsAt: 0,
+      secondsLeft: 0
+    };
 
-    enterRoom(socket, code, data && data.name);
+    rooms.set(code, room);
+    enterRoom(socket, room, data && data.name);
   });
 
   socket.on("joinRoom", data => {
@@ -244,50 +363,100 @@ io.on("connection", socket => {
       return fail(socket, "Kode room harus terdiri dari 6 karakter.");
     }
 
-    enterRoom(socket, code, data && data.name);
+    enterRoom(socket, rooms.get(code), data && data.name);
   });
 
   socket.on("leaveRoom", () => {
-    removePlayerFromRoom(socket);
+    removeFromRoom(socket);
     socket.emit("roomLeft");
+  });
+
+  socket.on("setReady", value => {
+    const p = players.get(socket.id);
+    const room = p && rooms.get(p.room);
+    if (!p || !room || room.phase !== "lobby") return;
+
+    p.ready = Boolean(value);
+    sendRoomInfo(room.code);
+  });
+
+  socket.on("updateRoomSettings", data => {
+    const p = players.get(socket.id);
+    const room = p && rooms.get(p.room);
+
+    if (!p || !room) return settingsFail(socket, "Kamu belum berada di room.");
+    if (room.hostId !== socket.id) return settingsFail(socket, "Hanya host yang boleh mengatur room.");
+    if (room.phase !== "lobby") return settingsFail(socket, "Pengaturan hanya bisa diubah saat lobby.");
+    if (!data || typeof data !== "object") return settingsFail(socket, "Pengaturan tidak valid.");
+
+    const mode = data.mode === "lives" ? "lives" : "infinity";
+    const lives = Number(data.lives);
+    const timeLimit = Number(data.timeLimit);
+    const killLimit = Number(data.killLimit);
+    const damage = Number(data.damage);
+
+    if (![3, 5, 10].includes(lives)) return settingsFail(socket, "Jumlah nyawa tidak valid.");
+    if (![0, 5, 10, 15, 30].includes(timeLimit)) return settingsFail(socket, "Durasi tidak valid.");
+    if (![0, 5, 10, 20, 30].includes(killLimit)) return settingsFail(socket, "Target kill tidak valid.");
+    if (![10, 25, 50, 100].includes(damage)) return settingsFail(socket, "Damage tidak valid.");
+
+    room.settings = { mode, lives, timeLimit, killLimit, damage };
+
+    for (const id of room.players) {
+      const player = players.get(id);
+      if (player) player.livesLeft = lives;
+    }
+
+    sendRoomInfo(room.code);
+  });
+
+  socket.on("startMatch", () => {
+    const p = players.get(socket.id);
+    const room = p && rooms.get(p.room);
+
+    if (!p || !room) return settingsFail(socket, "Kamu belum berada di room.");
+    if (room.hostId !== socket.id) return settingsFail(socket, "Hanya host yang dapat memulai pertandingan.");
+    if (!startMatch(room)) return settingsFail(socket, "Tidak bisa memulai pertandingan.");
   });
 
   socket.on("move", data => {
     const p = players.get(socket.id);
-    if (!p || !p.alive || !data || !p.room) return;
+    if (!p || !p.room || !data || !p.alive) return;
+
+    const room = rooms.get(p.room);
+    if (!room || room.phase !== "playing") return;
 
     const now = Date.now();
-    if (now - p.lastMove < 25) return;
+    if (now - p.lastMove < 30) return;
 
     const x = Number(data.x);
     const z = Number(data.z);
     const rot = Number(data.rot);
-
     if (![x, z, rot].every(Number.isFinite)) return;
-    if (Math.abs(x) > ARENA + 5 || Math.abs(z) > ARENA + 5) return;
+    if (Math.abs(x) > ARENA + 3 || Math.abs(z) > ARENA + 3) return;
 
     p.lastMove = now;
     p.x = Math.max(-ARENA + 2, Math.min(ARENA - 2, x));
     p.z = Math.max(-ARENA + 2, Math.min(ARENA - 2, z));
-    p.rot = Math.max(-Math.PI * 4, Math.min(Math.PI * 4, rot));
-    p.moving = Boolean(data.moving);
+    p.rot = Math.max(-Math.PI * 8, Math.min(Math.PI * 8, rot));
 
-    socket.to(p.room).emit("playerMoved", publicPlayer(p));
+    socket.to(p.room).emit("playerMoved", safePlayer(p));
   });
 
   socket.on("shoot", data => {
     const p = players.get(socket.id);
-    if (!p || !p.alive || !p.room || !data) return;
+    const room = p && rooms.get(p.room);
+    if (!p || !room || room.phase !== "playing" || !p.alive || !data) return;
 
     const now = Date.now();
-    if (now - p.lastShot < 260) return;
+    if (now - p.lastShot < 250) return;
 
     const dx = Number(data.dx);
     const dz = Number(data.dz);
     if (![dx, dz].every(Number.isFinite)) return;
 
     const length = Math.hypot(dx, dz);
-    if (length < 0.5 || length > 1.5) return;
+    if (length < 0.7 || length > 1.3) return;
 
     p.lastShot = now;
 
@@ -296,7 +465,6 @@ io.on("connection", socket => {
       owner: socket.id,
       room: p.room,
       x: p.x,
-      y: 1.35,
       z: p.z,
       dx: dx / length,
       dz: dz / length,
@@ -308,90 +476,108 @@ io.on("connection", socket => {
     io.to(p.room).emit("shotSpawn", shot);
   });
 
-  socket.on("hit", data => {
-    const attacker = players.get(socket.id);
-    if (!attacker || !attacker.alive || !attacker.room || !data) return;
-
-    const target = players.get(String(data.target));
-    const shot = shots.get(String(data.shotId));
-
-    if (!target || !shot || shot.owner !== socket.id) return;
-    if (target.room !== attacker.room || shot.room !== attacker.room) return;
-    if (target.id === attacker.id || !target.alive) return;
-
-    const now = Date.now();
-    if (now - (target.lastHit || 0) < 90) return;
-    if (now - shot.born > 1800) return;
-
-    const hitX = Number(data.x);
-    const hitZ = Number(data.z);
-    if (![hitX, hitZ].every(Number.isFinite)) return;
-
-    if (Math.hypot(target.x - hitX, target.z - hitZ) > 2.0) return;
-
-    shots.delete(shot.id);
-    io.to(attacker.room).emit("shotRemove", shot.id);
-
-    target.lastHit = now;
-    target.hp = Math.max(0, target.hp - 25);
-
-    io.to(attacker.room).emit("playerHit", {
-      target: target.id,
-      hp: target.hp,
-      by: attacker.id,
-      shotId: shot.id
-    });
-
-    if (target.hp <= 0) {
-      target.alive = false;
-      target.deaths += 1;
-      attacker.score += 1;
-
-      io.to(attacker.room).emit("playerDown", {
-        id: target.id,
-        by: attacker.id,
-        score: attacker.score
-      });
-
-      const targetId = target.id;
-      const targetRoom = target.room;
-
-      setTimeout(() => {
-        const current = players.get(targetId);
-        if (!current || current.room !== targetRoom) return;
-
-        const spawn = spawnPoint();
-        current.x = spawn.x;
-        current.z = spawn.z;
-        current.hp = 100;
-        current.alive = true;
-
-        io.to(targetRoom).emit("playerRespawn", publicPlayer(current));
-      }, 2400);
-    }
-
-    sendLeaderboard(attacker.room);
-  });
-
-  socket.on("disconnect", () => {
-    removePlayerFromRoom(socket);
-  });
+  socket.on("disconnect", () => removeFromRoom(socket));
 });
 
 setInterval(() => {
   const now = Date.now();
 
-  for (const [id, shot] of shots) {
-    if (now - shot.born > 1800) {
-      shots.delete(id);
-      const room = rooms.get(shot.room);
-      if (room) io.to(shot.room).emit("shotRemove", id);
+  for (const room of rooms.values()) {
+    if (room.phase === "playing") {
+      if (room.endsAt > 0) {
+        room.secondsLeft = Math.max(0, Math.ceil((room.endsAt - now) / 1000));
+        if (now >= room.endsAt) {
+          const winner = [...room.players]
+            .map(id => players.get(id))
+            .filter(Boolean)
+            .sort((a, b) => b.score - a.score)[0];
+          endMatch(room, winner ? winner.id : null, "Waktu pertandingan habis.");
+          continue;
+        }
+      }
+
+      for (const id of room.players) {
+        const p = players.get(id);
+        if (!p || p.alive || !p.respawnAt || now < p.respawnAt) continue;
+
+        p.respawnAt = 0;
+        if (room.settings.mode === "lives" && p.livesLeft <= 0) continue;
+
+        const pos = spawnPoint();
+        p.x = pos.x;
+        p.z = pos.z;
+        p.hp = 100;
+        p.alive = true;
+        io.to(room.code).emit("playerRespawn", safePlayer(p));
+      }
+
+      emitMatchStatus(room);
     }
   }
 
-  for (const code of rooms.keys()) sendLeaderboard(code);
-}, 1000);
+  for (const [id, shot] of shots) {
+    const room = rooms.get(shot.room);
+    const owner = players.get(shot.owner);
+
+    if (!room || room.phase !== "playing" || !owner || now - shot.born > 1400) {
+      shots.delete(id);
+      if (room) io.to(shot.room).emit("shotRemove", id);
+      continue;
+    }
+
+    const age = (now - shot.born) / 1000;
+    const sx = shot.x + shot.dx * age * 22;
+    const sz = shot.z + shot.dz * age * 22;
+    let consumed = false;
+
+    for (const targetId of room.players) {
+      const target = players.get(targetId);
+      if (!target || !target.alive || target.id === owner.id) continue;
+
+      if (Math.hypot(sx - target.x, sz - target.z) < 0.95) {
+        shots.delete(id);
+        io.to(room.code).emit("shotRemove", id);
+
+        target.hp = Math.max(0, target.hp - room.settings.damage);
+        io.to(room.code).emit("playerHit", {
+          target: target.id,
+          hp: target.hp,
+          by: owner.id,
+          shotId: id
+        });
+
+        if (target.hp <= 0) {
+          target.alive = false;
+          target.deaths += 1;
+          target.respawnAt = now + 2200;
+
+          if (room.settings.mode === "lives") {
+            target.livesLeft = Math.max(0, target.livesLeft - 1);
+          }
+
+          owner.score += 1;
+
+          io.to(room.code).emit("playerDown", {
+            id: target.id,
+            by: owner.id,
+            score: owner.score,
+            livesLeft: target.livesLeft
+          });
+
+          io.to(room.code).emit("playerMoved", safePlayer(target));
+          sendLeaderboard(room.code);
+          checkWin(room);
+        }
+
+        consumed = true;
+        break;
+      }
+    }
+
+    if (consumed) continue;
+  }
+}, 50);
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`NEON FRONTIER running on port ${PORT}`);
+  console.log(`NEON FRONTIER PRO running on port ${PORT}`);
 });
